@@ -19,7 +19,7 @@ Gin-blog-example/
     github.com/Unknwon/com          //Unknwon的工具库，包含了常用的一些封装
     github.com/go-sql-driver/mysql  // MySQL 驱动包
     github.com/jinzhu/gorm          // go 中实现数据库访问ORM（对象关系映射）方便利用面向对象的方法对数据库进行CRUD
-                      
+    github.com/astaxie/beego/validation     //beego的表单验证库                  
 ```
 
 
