@@ -1,22 +1,15 @@
 package main
 
 import (
-	"Gin-blog-example/pkg/e"
 	"Gin-blog-example/pkg/setting"
+	"Gin-blog-example/routers"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
 
 func main() {
-	router := gin.Default()
-
-	router.GET("/test", func(c *gin.Context) {
-		c.JSON(e.SUCCESS, gin.H{
-			"msg": "test",
-		})
-	})
+	router := routers.InitRouter()
 
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%d", setting.HttpPort),
