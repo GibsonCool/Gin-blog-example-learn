@@ -34,3 +34,13 @@ Gin-blog-example/
 > 拉取go-ini/ini的依赖包  
 > ``go get -u github.com/go-ini/ini``
 
+
+## GORM
+> [GORM 中文文档](http://gorm.book.jasperxu.com/)  
+> Golang 写的，对开发人员友好的ORM库，   
+
+## beego/validation
+> [表单验证](https://beego.me/docs/mvc/controller/validation.md)  
+> beego 也是一个快速开发 go 应用的 HTTP 框架。这里使用了该框架的表单验证模块
+用于数据验证和错误收集的模块。
+
