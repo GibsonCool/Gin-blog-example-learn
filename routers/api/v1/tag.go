@@ -59,7 +59,7 @@ func AddTag(ctx *gin.Context) {
 	valid.Range(state, 0, 1, "state").Message("状态只允许为0或1")
 
 	code := e.InvalidParams
-
+	var msg string
 	//表单参数如果没有错误
 	if !valid.HasErrors() {
 		//判断 tag 是否被创建过
@@ -69,11 +69,16 @@ func AddTag(ctx *gin.Context) {
 		} else {
 			code = e.ErrorExistTag
 		}
+		msg = e.GetMsg(code)
+	} else {
+		for _, err := range valid.Errors {
+			msg += err.Message + ","
+		}
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": code,
-		"msg":  e.GetMsg(code),
+		"msg":  msg,
 		"data": make(map[string]string),
 	})
 
@@ -81,10 +86,86 @@ func AddTag(ctx *gin.Context) {
 
 //修改文章标签
 func EditTag(ctx *gin.Context) {
+	id := com.StrTo(ctx.Param("id")).MustInt()
+	name := ctx.Query("name")
+	modifiedBy := ctx.Query("modified_by")
+
+	valid := validation.Validation{}
+
+	var state int = -1
+	if arg := ctx.Query("state"); arg != "" {
+		state = com.StrTo(arg).MustInt()
+		valid.Range(state, 0, 1, "state").Message("状态只允许为0或1")
+	}
+
+	valid.Required(id, "id").Message("ID 不能为空")
+	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
+	valid.MaxSize(modifiedBy, 100, "modified_by").Message("修改人最长为100字符")
+	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
+
+	code := e.InvalidParams
+	var msg string
+	if !valid.HasErrors() {
+		if models.ExistTagByID(id) {
+			data := make(map[string]interface{})
+			data["modified_by"] = modifiedBy
+			if name != "" {
+				data["name"] = name
+			}
+
+			if state != -1 {
+				data["state"] = state
+			}
+
+			models.EditTag(id, data)
+			code = e.SUCCESS
+		} else {
+			code = e.ErrorNotExistTag
+		}
+
+		msg = e.GetMsg(code)
+	} else {
+		for _, err := range valid.Errors {
+			msg += err.Message + ","
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  msg,
+		"data": make(map[string]string),
+	})
 
 }
 
 //删除文章标签
 func DeleteTag(ctx *gin.Context) {
+	id := com.StrTo(ctx.Param("id")).MustInt()
 
+	valid := validation.Validation{}
+
+	valid.Min(id, 1, "id").Message("ID 必须大于0")
+
+	code := e.InvalidParams
+	var msg string
+
+	if !valid.HasErrors() {
+		if models.ExistTagByID(id) {
+			models.DeleteTag(id)
+			code = e.SUCCESS
+		} else {
+			code = e.ErrorNotExistTag
+		}
+		msg = e.GetMsg(code)
+	} else {
+		for _, err := range valid.Errors {
+			msg += err.Message + ","
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  msg,
+		"data": make(map[string]string),
+	})
 }
