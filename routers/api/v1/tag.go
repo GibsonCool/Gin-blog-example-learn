@@ -52,11 +52,11 @@ func AddTag(ctx *gin.Context) {
 	//beego 的表单验证
 	valid := validation.Validation{}
 
-	valid.Required(name, "name").Message("名称不能为空")
-	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
-	valid.Required(createdBy, "created_by").Message("创建人不能为空")
-	valid.MaxSize(createdBy, 100, "name").Message("创建人最长为100字符")
-	valid.Range(state, 0, 1, "state").Message("状态只允许为0或1")
+	valid.Required(name, "name").Message(e.NameNotEmpty)
+	valid.MaxSize(name, 100, "name").Message(e.NameMaxSize100)
+	valid.Required(createdBy, "created_by").Message(e.CreatedManNotEmpty)
+	valid.MaxSize(createdBy, 100, "name").Message(e.CreatedManMaxSize100)
+	valid.Range(state, 0, 1, "state").Message(e.StateMustZeroOrOne)
 
 	code := e.InvalidParams
 	var msg string
@@ -71,9 +71,7 @@ func AddTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		for _, err := range valid.Errors {
-			msg += err.Message + ","
-		}
+		msg = ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -95,13 +93,13 @@ func EditTag(ctx *gin.Context) {
 	var state int = -1
 	if arg := ctx.Query("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
-		valid.Range(state, 0, 1, "state").Message("状态只允许为0或1")
+		valid.Range(state, 0, 1, "state").Message(e.StateMustZeroOrOne)
 	}
 
-	valid.Required(id, "id").Message("ID 不能为空")
-	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
-	valid.MaxSize(modifiedBy, 100, "modified_by").Message("修改人最长为100字符")
-	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
+	valid.Required(id, "id").Message(e.IDNotEmpty)
+	valid.Required(modifiedBy, "modified_by").Message(e.ModifiedManNotEmpty)
+	valid.MaxSize(modifiedBy, 100, "modified_by").Message(e.ModifiedManMaxSize100)
+	valid.MaxSize(name, 100, "name").Message(e.NameMaxSize100)
 
 	code := e.InvalidParams
 	var msg string
@@ -125,9 +123,7 @@ func EditTag(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
-		for _, err := range valid.Errors {
-			msg += err.Message + ","
-		}
+		msg = ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -144,7 +140,7 @@ func DeleteTag(ctx *gin.Context) {
 
 	valid := validation.Validation{}
 
-	valid.Min(id, 1, "id").Message("ID 必须大于0")
+	valid.Min(id, 1, "id").Message(e.IDMustGreaterThanZero)
 
 	code := e.InvalidParams
 	var msg string
@@ -158,9 +154,7 @@ func DeleteTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		for _, err := range valid.Errors {
-			msg += err.Message + ","
-		}
+		msg = ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

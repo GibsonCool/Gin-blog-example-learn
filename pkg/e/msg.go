@@ -21,3 +21,28 @@ func GetMsg(code int) string {
 	}
 	return MsgFlags[ERROR]
 }
+
+// 定义常用错误 tips
+const (
+	NameNotEmpty   = "名称不能为空"
+	NameMaxSize100 = "名称最长为100字符"
+
+	CreatedManNotEmpty   = "创建人不能为空"
+	CreatedManMaxSize100 = "创建人最长为100字符"
+
+	ModifiedManNotEmpty   = "修改人不能为空"
+	ModifiedManMaxSize100 = "修改人最长为100字符"
+
+	StateMustZeroOrOne       = "状态只允许为0或1"
+	TagIdMustGreaterThanZero = "标签ID必须大于0"
+
+	IDNotEmpty            = "ID 不能为空"
+	IDMustGreaterThanZero = "ID 必须大于0"
+
+	TitleNotEmpty       = "标题不能为空"
+	TitleMaxSize100     = "标题最长为100字符"
+	DescNotEmpty        = "简述不能为空"
+	DescMaxSize255      = "简述最长为255字符"
+	ContentNotEmpty     = "内容不能为空"
+	ContentMaxSize65535 = "内容最长为65535字符"
+)
