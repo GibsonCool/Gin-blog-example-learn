@@ -34,7 +34,7 @@ func GetArticle(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, models.BaseResp{
@@ -77,7 +77,7 @@ func GetArticleList(ctx *gin.Context) {
 		code = e.SUCCESS
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, models.BaseResp{
@@ -125,7 +125,7 @@ func AddArticle(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, models.BaseResp{
@@ -197,7 +197,7 @@ func EditArticle(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, models.BaseResp{
@@ -229,7 +229,7 @@ func DeleteArticle(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, models.BaseResp{

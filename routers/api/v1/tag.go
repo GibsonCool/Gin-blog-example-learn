@@ -71,7 +71,7 @@ func AddTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -123,7 +123,7 @@ func EditTag(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -154,7 +154,7 @@ func DeleteTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
-		msg = ValidErrorsToStr(valid.Errors)
+		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

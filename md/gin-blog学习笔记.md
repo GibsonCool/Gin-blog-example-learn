@@ -44,3 +44,61 @@ Gin-blog-example/
 > beego 也是一个快速开发 go 应用的 HTTP 框架。这里使用了该框架的表单验证模块
 用于数据验证和错误收集的模块。
 
+## JWT（Json Web token）
+> JWT 是一个很长的字符串，中间用 '.' 分隔成三个部分。这三个部分依次如下
+```
+ * Header(头部）
+ * Payload(负载)
+ * Signature(签名)
+ 
+ 写成一行就是这个样子
+ Header.Payload.Signature
+ 
+ 再看个实际的例子
+   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+```
+> Header部分是一个JSON对象，描述JWT的元数据，通常如下
+>> ```
+>> {
+>>  "alg": "HS256",
+>>  "typ": "JWT"
+>> }
+>>```  
+> alg属性表示签名的算法（algorithm），默认是 HMAC SHA256（写成 HS256）；  
+> typ属性表示这个令牌（token）的类型（type），JWT 令牌统一写为JWT。      
+> 最后，将上面的 JSON 对象使用 Base64URL 算法（详见后文）转成字符串。  
+
+---
+> Payload 部分也是一个JSON对象，用来存放实际需要传递的数据，JWT规定了7个官方字段，提供选用  
+>> ```
+>> iss (issuer)：签发人
+>> exp (expiration time)：过期时间
+>> sub (subject)：主题
+>> aud (audience)：受众
+>> nbf (Not Before)：生效时间
+>> iat (Issued At)：签发时间
+>> jti (JWT ID)：编号
+>> ```
+> 除了官方字段，还可以在这个部分定义私有字段，例如
+>> ```
+>> {
+>>     "sub":"1111",
+>>     "admin":true
+>> }
+>> ```
+*值得注意的是JWT默认是不加密的，任何人都可以读到，所以不要把秘密信息放到这个不封，最后json也要用BAse64URL转成字符串
+---
+> Signature 部分是对前两个部分的签名，防止数据被篡改  
+> 首先，需要指定一个密钥（secret）。这个密钥只有服务器才知道，不能泄露给用户。然后，使用 Header 里面指定的签名算法（默认是 HMAC SHA256），按照下面的公式产生签名。
+>> ```
+>> HMACSHA256(
+>>   base64UrlEncode(header) + "." +
+>>   base64UrlEncode(payload),
+>>   secret)
+>> ```
+> 算出签名以后，把 Header、Payload、Signature 三个部分拼成一个字符串，每个部分之间用"点"（.）分隔，就可以返回给用户。
+>
+> 下面的文章讲的不错  
+>> *[JSON Web Token 在 web 应用间安全的传递信息](http://blog.didispace.com/json-web-token-web-security/)*  
+>> *[八幅漫画理解使用 JWT设计的单点登录系统](http://blog.didispace.com/user-authentication-with-jwt/)*   
+>> *[理解JWT的使用场景和优劣](http://blog.didispace.com/learn-how-to-use-jwt-xjf/)*
