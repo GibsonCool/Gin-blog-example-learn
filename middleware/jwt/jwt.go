@@ -18,7 +18,7 @@ func JWT() gin.HandlerFunc {
 		token := ctx.Query("token")
 
 		if token == "" {
-			code = e.InvalidParams
+			code = e.InvalidParamsEmptyToken
 		} else {
 			//解析token
 			claims, err := util.ParseToken(token)
@@ -28,8 +28,6 @@ func JWT() gin.HandlerFunc {
 			} else if time.Now().Unix() > claims.ExpiresAt {
 				// token 超时
 				code = e.ErrorAuthCheckTokenTimeout
-			} else {
-				code = e.UnknowError
 			}
 		}
 

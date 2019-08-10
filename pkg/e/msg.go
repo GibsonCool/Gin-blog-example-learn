@@ -5,6 +5,7 @@ var MsgFlags = map[int]string{
 	SUCCESS:                    "ok",
 	ERROR:                      "fail",
 	InvalidParams:              "请求参数错误",
+	InvalidParamsEmptyToken:    "请求参数错误,token为空",
 	ErrorExistTag:              "已存在该标签名称",
 	ErrorNotExistTag:           "该标签不存在",
 	ErrorNotExistArticle:       "该文章不存在",
