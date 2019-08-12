@@ -108,3 +108,8 @@ Gin-blog-example/
 ## endless
 > [如何优雅地重启go程序--endless篇](https://blog.csdn.net/tomatomas/article/details/94839857)
 > endless 通过监听信号量，完成对服务器管控一系列操作，达到服务重新启动的零停机效果 
+
+## swagger
+> [使用swaggo自动生成Restful API文档](https://ieevee.com/tech/2018/04/19/go-swag.html)
+> 1、http://127.0.0.1:8000/swagger/index.html 访问如果出现“404 page not found”。需要在routers.go中加下路由配置，这个连载文章中没有提到  
+> 2、路由配置重启后，刷新能访问，但是界面却出现 ”Failed to load spec.“ 是因为没有将swag init初始化生成的文件夹进行导包。所以加载失败 import 中加入下 _ "you_project_name/docs"
