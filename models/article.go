@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
 )
@@ -32,6 +33,7 @@ func (*Article) BeforeUpdate(scope *gorm.Scope) error {
 func ExistArticleByID(id int) bool {
 	var article Article
 	db.Select("id").Where("id = ?", id).First(&article)
+	fmt.Printf("查询结果  %d ：   %v", id, article)
 	return article.ID > 0
 }
 

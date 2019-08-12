@@ -1,6 +1,7 @@
 package models
 
 import (
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -42,7 +43,7 @@ func init() {
 			dbName))
 
 	if err != nil {
-		log.Println(err)
+		logging.Error(err.Error())
 	}
 
 	// 通过定义DefaultTableNameHandler对默认表名应用任何规则,

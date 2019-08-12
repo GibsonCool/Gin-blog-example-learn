@@ -3,6 +3,7 @@ package v1
 import (
 	"Gin-blog-example/models"
 	"Gin-blog-example/pkg/e"
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"github.com/Unknwon/com"
@@ -71,6 +72,9 @@ func AddTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -123,6 +127,9 @@ func EditTag(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -154,6 +161,9 @@ func DeleteTag(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 

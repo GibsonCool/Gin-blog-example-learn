@@ -1,10 +1,10 @@
 package main
 
 import (
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/routers"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	server.RegisterOnShutdown(func() {
-		log.Println("程序关闭。。。。")
+		logging.Info("程序关闭。。。。")
 	})
 
 	server.ListenAndServe()

@@ -3,6 +3,7 @@ package api
 import (
 	"Gin-blog-example/models"
 	"Gin-blog-example/pkg/e"
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/util"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,9 @@ func GetAuth(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 

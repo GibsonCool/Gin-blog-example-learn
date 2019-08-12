@@ -1,6 +1,8 @@
 package util
 
-import "github.com/astaxie/beego/validation"
+import (
+	"github.com/astaxie/beego/validation"
+)
 
 //将表单验证的错误信息，转换为string
 func ValidErrorsToStr(errs []*validation.Error) (msg string) {

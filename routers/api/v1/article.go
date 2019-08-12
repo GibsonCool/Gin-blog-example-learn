@@ -3,6 +3,7 @@ package v1
 import (
 	"Gin-blog-example/models"
 	"Gin-blog-example/pkg/e"
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"github.com/Unknwon/com"
@@ -34,6 +35,9 @@ func GetArticle(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -77,6 +81,9 @@ func GetArticleList(ctx *gin.Context) {
 		code = e.SUCCESS
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -125,6 +132,9 @@ func AddArticle(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -197,6 +207,9 @@ func EditArticle(ctx *gin.Context) {
 
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
@@ -229,6 +242,9 @@ func DeleteArticle(ctx *gin.Context) {
 		}
 		msg = e.GetMsg(code)
 	} else {
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
+		}
 		msg = util.ValidErrorsToStr(valid.Errors)
 	}
 
