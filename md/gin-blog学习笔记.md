@@ -19,7 +19,9 @@ Gin-blog-example/
     github.com/Unknwon/com          //Unknwon的工具库，包含了常用的一些封装
     github.com/go-sql-driver/mysql  // MySQL 驱动包
     github.com/jinzhu/gorm          // go 中实现数据库访问ORM（对象关系映射）方便利用面向对象的方法对数据库进行CRUD
-    github.com/astaxie/beego/validation     //beego的表单验证库                  
+    github.com/astaxie/beego/validation     //beego的表单验证库  
+    github.com/fvbock/endless       //实现 Golang HTTP/HTTPS 服务重新启动的零停机
+
 ```
 
 
@@ -102,3 +104,7 @@ Gin-blog-example/
 >> *[JSON Web Token 在 web 应用间安全的传递信息](http://blog.didispace.com/json-web-token-web-security/)*  
 >> *[八幅漫画理解使用 JWT设计的单点登录系统](http://blog.didispace.com/user-authentication-with-jwt/)*   
 >> *[理解JWT的使用场景和优劣](http://blog.didispace.com/learn-how-to-use-jwt-xjf/)*
+
+## endless
+> [如何优雅地重启go程序--endless篇](https://blog.csdn.net/tomatomas/article/details/94839857)
+> endless 通过监听信号量，完成对服务器管控一系列操作，达到服务重新启动的零停机效果 
