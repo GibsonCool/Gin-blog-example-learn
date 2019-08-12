@@ -15,7 +15,14 @@ type auth struct {
 	Password string `valid:"Required; MaxSize(50)"`
 }
 
-//生成用户token
+// @Summary 获取token
+// @Description 通过账号信息获取token用于其他接口鉴权使用
+// @Produce json
+// @Param username body string true "UserName"
+// @Param password body string true "PassWord"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /auth [get]
 func GetAuth(ctx *gin.Context) {
 	username := ctx.Query("username")
 	password := ctx.Query("password")

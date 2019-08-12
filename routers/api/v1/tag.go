@@ -12,7 +12,13 @@ import (
 	"net/http"
 )
 
-// 获取多个文章标签
+// @Summary 获取多个标签
+// @Description 可选参数 tagName。获取标签列表
+// @Produce json
+// @Param name body string false "Name"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/tags [get]
 func GetTags(ctx *gin.Context) {
 	// ctx.Query可用于获取?name=test&state=1这类URL参数，而c.DefaultQuery则支持设置一个默认值
 	//name :=ctx.DefaultQuery("name","test")
@@ -44,7 +50,14 @@ func GetTags(ctx *gin.Context) {
 
 }
 
-//新增文章标签
+// @Summary 新增标签
+// @Produce json
+// @Param name body int true "Name"
+// @Param state body int false "State"
+// @Param created_by body string true "CreatedBy"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/tags [post]
 func AddTag(ctx *gin.Context) {
 	name := ctx.Query("name")
 	state := com.StrTo(ctx.DefaultQuery("state", "0")).MustInt()
@@ -86,7 +99,15 @@ func AddTag(ctx *gin.Context) {
 
 }
 
-//修改文章标签
+// @Summary 修改标签信息
+// @Description 根据标签 id 修改标签属性信息
+// @Produce json
+// @Param id path int true "ID"
+// @Param modified_by body string true "ModifiedBy"
+// @Param state body int false "State"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/tags/{id} [put]
 func EditTag(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt()
 	name := ctx.Query("name")
@@ -141,7 +162,12 @@ func EditTag(ctx *gin.Context) {
 
 }
 
-//删除文章标签
+// @Summary 删除标签
+// @Description 根据标签id 删除对应标签信息
+// @Produce json
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/tags/{id} [delete]
 func DeleteTag(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt()
 

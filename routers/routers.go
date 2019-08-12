@@ -1,11 +1,14 @@
 package routers
 
 import (
+	_ "Gin-blog-example/docs"
 	"Gin-blog-example/middleware/jwt"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/routers/api"
 	v1 "Gin-blog-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 //抽离路由规则配置
@@ -25,6 +28,8 @@ func InitRouter() *gin.Engine {
 	//})
 
 	r.GET("/auth", api.GetAuth)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	apiv1 := r.Group("/api/v1")
 

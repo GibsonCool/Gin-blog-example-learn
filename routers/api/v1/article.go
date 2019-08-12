@@ -12,7 +12,13 @@ import (
 	"net/http"
 )
 
-//获取单个文章
+// @Summary 获取单个文章
+// @Description 通过文章 id 获取文章信息
+// @Produce json
+// @Param id path int true "ID"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles/{id} [get]
 func GetArticle(ctx *gin.Context) {
 
 	id := com.StrTo(ctx.Param("id")).MustInt()
@@ -49,7 +55,14 @@ func GetArticle(ctx *gin.Context) {
 
 }
 
-//获取多个文章
+// @Summary 获取多个文章
+// @Description 可通过可选参数获取符合条件的文章列表
+// @Produce json
+// @Param tag_id path int false "TagId"
+// @Param state path int false "State"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles [get]
 func GetArticleList(ctx *gin.Context) {
 	data := make(map[string]interface{})
 	maps := make(map[string]interface{})
@@ -95,7 +108,18 @@ func GetArticleList(ctx *gin.Context) {
 
 }
 
-//新增文章
+// @Summary 新增文章
+// @Description 可通过可选参数 tag_id 获取同标签下的所有文章信息
+// @Produce json
+// @Param tag_id body int false "TagId"
+// @Param state body int false "State"
+// @Param title body string false "Title"
+// @Param desc body string false "Desc"
+// @Param content body string false "Content"
+// @Param created_by body string false "CreatedBy"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles [post]
 func AddArticle(ctx *gin.Context) {
 	tagId := com.StrTo(ctx.Query("tag_id")).MustInt()
 	title := ctx.Query("title")
@@ -145,7 +169,19 @@ func AddArticle(ctx *gin.Context) {
 	})
 }
 
-//修改文章
+// @Summary 修改文章信息
+// @Description 根据文章 id 修改文章属性信息
+// @Produce json
+// @Param id path int true "ID"
+// @Param tag_id body int false "TagId"
+// @Param state body int false "State"
+// @Param title body string false "Title"
+// @Param desc body string false "Desc"
+// @Param content body string false "Content"
+// @Param created_by body string false "CreatedBy"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles/{id} [put]
 func EditArticle(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt()
 	tagId := com.StrTo(ctx.Query("tag_id")).MustInt()
@@ -221,7 +257,12 @@ func EditArticle(ctx *gin.Context) {
 
 }
 
-//删除文章
+// @Summary 删除文章
+// @Description 根据文章id 删除对应文章信息
+// @Produce json
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(ctx *gin.Context) {
 	id := com.StrTo(ctx.Param("id")).MustInt()
 

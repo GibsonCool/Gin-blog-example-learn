@@ -1,0 +1,295 @@
+definitions:
+  models.BaseResp:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      msg:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /api/v1/articles:
+    get:
+      description: 可通过可选参数获取符合条件的文章列表
+      parameters:
+      - description: TagId
+        in: path
+        name: tag_id
+        type: integer
+      - description: State
+        in: path
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 获取多个文章
+    post:
+      description: 可通过可选参数 tag_id 获取同标签下的所有文章信息
+      parameters:
+      - description: TagId
+        in: body
+        name: tag_id
+        schema:
+          type: integer
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
+      - description: Title
+        in: body
+        name: title
+        schema:
+          type: string
+      - description: Desc
+        in: body
+        name: desc
+        schema:
+          type: string
+      - description: Content
+        in: body
+        name: content
+        schema:
+          type: string
+      - description: CreatedBy
+        in: body
+        name: created_by
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 新增文章
+  /api/v1/articles/{id}:
+    delete:
+      description: 根据文章id 删除对应文章信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 删除文章
+    get:
+      description: 通过文章 id 获取文章信息
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 获取单个文章
+    put:
+      description: 根据文章 id 修改文章属性信息
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: TagId
+        in: body
+        name: tag_id
+        schema:
+          type: integer
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
+      - description: Title
+        in: body
+        name: title
+        schema:
+          type: string
+      - description: Desc
+        in: body
+        name: desc
+        schema:
+          type: string
+      - description: Content
+        in: body
+        name: content
+        schema:
+          type: string
+      - description: CreatedBy
+        in: body
+        name: created_by
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 修改文章信息
+  /api/v1/tags:
+    get:
+      description: 可选参数 tagName。获取标签列表
+      parameters:
+      - description: Name
+        in: body
+        name: name
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 获取多个标签
+    post:
+      parameters:
+      - description: Name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: integer
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
+      - description: CreatedBy
+        in: body
+        name: created_by
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 新增标签
+  /api/v1/tags/{id}:
+    delete:
+      description: 根据标签id 删除对应标签信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 删除标签
+    put:
+      description: 根据标签 id 修改标签属性信息
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ModifiedBy
+        in: body
+        name: modified_by
+        required: true
+        schema:
+          type: string
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 修改标签信息
+  /auth:
+    get:
+      description: 通过账号信息获取token用于其他接口鉴权使用
+      parameters:
+      - description: UserName
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: PassWord
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 获取token
+swagger: "2.0"
