@@ -15,6 +15,7 @@ Gin-blog-example/
 
 ## 本项目所引用的第三方库
 ```
+    github.com/golang/dep/cmd/dep   //官方包依赖管理工具
     github.com/go-ini/in            //读取 .ini 配置文件
     github.com/Unknwon/com          //Unknwon的工具库，包含了常用的一些封装
     github.com/go-sql-driver/mysql  // MySQL 驱动包
@@ -110,6 +111,25 @@ Gin-blog-example/
 > endless 通过监听信号量，完成对服务器管控一系列操作，达到服务重新启动的零停机效果 
 
 ## swagger
-> [使用swaggo自动生成Restful API文档](https://ieevee.com/tech/2018/04/19/go-swag.html)
-> 1、http://127.0.0.1:8000/swagger/index.html 访问如果出现“404 page not found”。需要在routers.go中加下路由配置，这个连载文章中没有提到  
+> [使用swaggo自动生成Restful API文档](https://ieevee.com/tech/2018/04/19/go-swag.html)  
+> 1、http://xxxx:xxxx/swagger/index.html 访问如果出现“404 page not found”。需要在routers.go中加下路由配置，这个连载文章中没有提到  
 > 2、路由配置重启后，刷新能访问，但是界面却出现 ”Failed to load spec.“ 是因为没有将swag init初始化生成的文件夹进行导包。所以加载失败 import 中加入下 _ "you_project_name/docs"
+
+## docker 
+> 创建 Dockerfile 文件定义 Docker 镜像生成流程。文件内容是一条一条指令。每一条指令构建一层。
+> 这些指令应用于基础镜像并最终创建一个新的镜像  
+
+> 我们的 go 项目需要特别注意的一点：要使用 [github.com/golang/dep/cmd/dep] 来管理项目的第三方库依赖
+> 否则的话在进行 [docker build -t xxx .]  的时候会出现如下类似错误
+>> ```
+>> pkg/util/pagination.go:5:2: cannot find package "github.com/Unknwon/com" in any of:
+>>         /usr/local/go/src/github.com/Unknwon/com (from $GOROOT)
+>>         /go/src/github.com/Unknwon/com (from $GOPATH)
+>> ```
+> 这个原因很简单，我们使用 docker 构建的项目基于网络拉取的 golang 镜像的 `$GOROOT` 和  
+> `$GOPATH`中并没有我们实际本机中`$GOPATH`里面下载的第三方库。并且`Dockerfile`仅仅能  
+> 识别出当前文件根目录下的文件和文件夹。这个 `dep` 的作用主要就是将自己依赖 `$GOPATH`   
+> 的第三方库 copy  到自己项目的根目录新建文件夹 'vendor' 下。仅仅供自己使用，如此一来  
+> 构建镜像的时候所有依赖的完整代码都有了就可以构建通过了
+>> [Go依赖管理工具dep](https://eddycjy.gitbook.io/golang/di-2-ke-bao-guan-li/dep)  
+>> [docker构建golang分布式带依赖库项目镜像](https://blog.csdn.net/u012740992/article/details/91841021)
