@@ -4,6 +4,7 @@
 ```
 Gin-blog-example/
 ├── conf                    //用于存储配置文件
+├── data                    //MySQL数据挂载卷目录 
 ├── middleware              //应用中间件
 ├── models                  //引用数据库模型
 ├── pkg                     //第三方包
@@ -133,3 +134,47 @@ Gin-blog-example/
 > 构建镜像的时候所有依赖的完整代码都有了就可以构建通过了
 >> [Go依赖管理工具dep](https://eddycjy.gitbook.io/golang/di-2-ke-bao-guan-li/dep)  
 >> [docker构建golang分布式带依赖库项目镜像](https://blog.csdn.net/u012740992/article/details/91841021)
+>    
+> ---   
+> #### 拉取 mysql 容器
+>> ```
+>> docker pull mysql
+>> ```
+> #### MySQL挂在数据卷
+>> 首先创建一个目录用于存放数据卷
+>> 这里我选在在当前项目下创建
+>> ```
+>> mkdir data
+>> cd data
+>> mkdir docker-mysql
+>> cd docker-mysql
+>> pwd  //获取全路径
+>> //启动时候将常见好的挂载目录绑定
+>> docker run --name blog-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -v /Users/coulson/go/src/Gin-blog-example/data/docker-mysql:/var/lib/mysql -d mysql:5.7
+> 创建成功后，观察当前项目下的 /data/docker-mysql，多了不少数据库文件
+>  
+> #### 修改 conf/app.ini 中的 [database] 下的 HOST 为上面 docker 启动所配置的名称`blog-mysql`和密码`123456`
+>> ```
+>> ...
+>> 
+>> [database]
+>> TYPE = mysql
+>> USER = root
+>> PASSWORD = 123456
+>> HOST = blog-mysql:3306
+>> NAME = blog
+>> TABLE_PREFIX = blog_
+>> ...
+>> 
+> #### 编译可执行文件
+>> ```
+>> CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o Gin-blog-example .
+> #### 配置完成构建我们的镜像
+>> ```
+>> docker build -t gin-blog-docker-scratch .  
+>> docker images //查看我们创建好的项目镜像
+>> #gin-blog-docker-scratch   latest              16d0501e7a3f        3 minutes ago       398MB
+> #### golang+mysql 将我们的项目和MySQL关联起来
+>> ```
+>> // 通过 --link  可以在单机容器内直接使用其关联的容器别名进行访问，而不通过ip。
+>> docker run --link blog-mysql:mysql -p 8000:8000 gin-blog-docker-scratch
