@@ -1,10 +1,5 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"time"
-)
-
 // 创建 Tag struct 用于 Gorm 使用。并给予附属属性 json。便于在接口返回数据的时候自动转换格式
 type Tag struct {
 	Model
@@ -25,15 +20,18 @@ type Tag struct {
 		删除：BeforeDelete、AfterDelete
 		查询：AfterFind
 */
-func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
-	_ = scope.SetColumn("CreatedOn", time.Now().Unix())
-	return nil
-}
-
-func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
-	_ = scope.SetColumn("ModifiedOn", time.Now().Unix())
-	return nil
-}
+// 在 models.go 中使用自定义 callbacks 就不用每个文件重复写这种回调了
+// 即使写了也无妨，因为自定义的 callbacks 会在这里后调用，覆盖这的操作
+//func (tag *Tag) BeforeCreate(scope *gorm.Scope) error {
+//	_ = scope.SetColumn("CreatedOn", time.Now().Unix())
+//	return nil
+//}
+//
+//func (tag *Tag) BeforeUpdate(scope *gorm.Scope) error {
+//	_ = scope.SetColumn("ModifiedOn", time.Now().Unix())
+//	fmt.Println("ModifiedOn=======================>")
+//	return nil
+//}
 
 //从数据库查询tags
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {

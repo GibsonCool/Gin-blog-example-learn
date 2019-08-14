@@ -2,8 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	"time"
 )
 
 type Article struct {
@@ -20,15 +18,16 @@ type Article struct {
 	State      int    `json:"state"`
 }
 
-func (*Article) BeforeCreate(scope *gorm.Scope) error {
-	_ = scope.SetColumn("CreatedOn", time.Now().Unix())
-	return nil
-}
-
-func (*Article) BeforeUpdate(scope *gorm.Scope) error {
-	_ = scope.SetColumn("ModifiedOn", time.Now().Unix())
-	return nil
-}
+// 在 models.go 中使用自定义 callbacks 就不用每个文件重复写这种回调了
+//func (*Article) BeforeCreate(scope *gorm.Scope) error {
+//	_ = scope.SetColumn("CreatedOn", time.Now().Unix())
+//	return nil
+//}
+//
+//func (*Article) BeforeUpdate(scope *gorm.Scope) error {
+//	_ = scope.SetColumn("ModifiedOn", time.Now().Unix())
+//	return nil
+//}
 
 func ExistArticleByID(id int) bool {
 	var article Article
