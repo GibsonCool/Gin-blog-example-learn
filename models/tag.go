@@ -87,3 +87,10 @@ func EditTag(id int, data interface{}) bool {
 	db.Model(&Tag{}).Where("id = ?", id).Update(data)
 	return true
 }
+
+// 硬删除标签
+func CleanAllTag() bool {
+	// 使用 Unscoped 查找软删除的记录并删除
+	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
+	return true
+}

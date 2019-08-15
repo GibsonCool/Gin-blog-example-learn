@@ -73,3 +73,10 @@ func DeleteArticle(id int) bool {
 	db.Where("id = ?", id).Delete(&Article{})
 	return true
 }
+
+// 硬删除标签
+func CleanAllArticle() bool {
+	// 使用 Unscoped 查找软删除的记录并执行硬删除
+	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
+	return true
+}

@@ -23,6 +23,7 @@ Gin-blog-example/
     github.com/jinzhu/gorm          // go 中实现数据库访问ORM（对象关系映射）方便利用面向对象的方法对数据库进行CRUD
     github.com/astaxie/beego/validation     //beego的表单验证库  
     github.com/fvbock/endless       //实现 Golang HTTP/HTTPS 服务重新启动的零停机
+    github.com/robfig/cron          //定时任务
 
 ```
 
@@ -41,7 +42,8 @@ Gin-blog-example/
 
 ## GORM
 > [GORM 中文文档](http://gorm.book.jasperxu.com/)  
-> Golang 写的，对开发人员友好的ORM库，   
+> Golang 写的，对开发人员友好的ORM库，
+> GORM 可以通过自定义 callbacks 自定义回调方法注册进钩子方法中，避免多个文件去进行重复回调的书写
 
 ## beego/validation
 > [表单验证](https://beego.me/docs/mvc/controller/validation.md)  
@@ -178,3 +180,8 @@ Gin-blog-example/
 >> ```
 >> // 通过 --link  可以在单机容器内直接使用其关联的容器别名进行访问，而不通过ip。
 >> docker run --link blog-mysql:mysql -p 8000:8000 gin-blog-docker-scratch
+
+
+## cron
+> [cron表达式详解](https://www.cnblogs.com/linjiqin/p/3178452.html)  
+> cron 可以简单理解遵循一串定义的字符规则，来描述定时任务
