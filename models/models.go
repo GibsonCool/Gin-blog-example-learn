@@ -1,7 +1,6 @@
 package models
 
 import (
-	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,39 +18,25 @@ type Model struct {
 	DeletedOn  int `json:"deleted_on"`
 }
 
-// 读取 .ini 配置进行数据库操作初始化
-func init() {
-	var (
-		err                                               error
-		dbType, dbName, user, password, host, tablePrefix string
-	)
-	sec, err := setting.Cfg.GetSection("database")
-	if err != nil {
-		log.Fatal(2, "Fail to get section 'database' : %v", err)
-	}
+// 从映射结构体中获取数据库配置信息
+func Setup() {
+	log.Printf("读取 database 配置项....")
 
-	dbType = sec.Key("TYPE").String()
-	dbName = sec.Key("NAME").String()
-	user = sec.Key("USER").String()
-	password = sec.Key("PASSWORD").String()
-	host = sec.Key("HOST").String()
-	tablePrefix = sec.Key("TABLE_PREFIX").String()
-
-	db, err = gorm.Open(dbType,
+	db, err := gorm.Open(setting.DataBaseSetting.Type,
 		fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-			user,
-			password,
-			host,
-			dbName))
+			setting.DataBaseSetting.User,
+			setting.DataBaseSetting.Password,
+			setting.DataBaseSetting.Host,
+			setting.DataBaseSetting.Name))
 
 	if err != nil {
-		logging.Error(err.Error())
+		log.Fatalf("models.Setup err:%v", err)
 	}
 
 	// 通过定义DefaultTableNameHandler对默认表名应用任何规则,
 	// 这里使用自定义前缀+表名
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		return tablePrefix + defaultTableName
+		return setting.DataBaseSetting.TablePrefix + defaultTableName
 	}
 
 	db.SingularTable(true) //全局禁用表明复数。 如果设置为true,`User`的默认表名为`user`,使用`TableName`设置的表名不受影响

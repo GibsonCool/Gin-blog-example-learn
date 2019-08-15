@@ -13,12 +13,13 @@ import (
 
 //抽离路由规则配置
 func InitRouter() *gin.Engine {
+	//设置 gin mode 需要放在 New() 之前才生效
+	gin.SetMode(setting.ServerSetting.RunMode)
+
 	r := gin.New()
 
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-
-	gin.SetMode(setting.RunMode)
 
 	// 测试接口
 	//r.GET("/test", func(c *gin.Context) {

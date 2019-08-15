@@ -88,7 +88,7 @@ func GetArticleList(ctx *gin.Context) {
 	code := e.InvalidParams
 	var msg string
 	if !valid.HasErrors() {
-		data["lists"] = models.GetArticleList(util.GetPage(ctx), setting.PageSize, maps)
+		data["lists"] = models.GetArticleList(util.GetPage(ctx), setting.AppSetting.PageSize, maps)
 		data["total"] = models.GetArticleTotal(maps)
 
 		code = e.SUCCESS

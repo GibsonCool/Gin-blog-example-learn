@@ -6,54 +6,82 @@ import (
 	"time"
 )
 
-var (
-	Cfg *ini.File
+type App struct {
+	JwtSecret       string
+	PageSize        int
+	RuntimeRootPath string
 
-	RunMode string
+	ImagePrefixUrl string
+	ImageSavePath  string
+	ImageMaxSize   int
+	ImageAllowExts []string
 
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
+}
+
+type Server struct {
+	RunMode      string
 	HttpPort     int
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+}
 
-	PageSize  int
-	JwtSecret string
+type DataBase struct {
+	Type        string
+	User        string
+	Password    string
+	Host        string
+	Name        string
+	TablePrefix string
+}
+
+var (
+	AppSetting      = &App{}
+	ServerSetting   = &Server{}
+	DataBaseSetting = &DataBase{}
 )
 
-// 初始化从配置文件 app.ini 中读取一些配置参数
-func init() {
-	var err error
-	Cfg, err = ini.Load("conf/app.ini")
-	if err != nil {
-		log.Fatalf("Fail to parse 'conf/app.in' : %v", err)
-	}
-	LoadBase()
-	LoadServer()
-	LoadApp()
-}
+/*
+	编写(App、Server、DataBase)与 app.ini 一直的结构体
+	使用 MapTo 将配置项映射到结构上面定义的结构体上
+	对一些特殊设置的配置项进行在赋值
+*/
+func Setup() {
+	log.Printf("读取 app.ini 配置项....")
 
-func LoadBase() {
-	RunMode = Cfg.Section("").Key("RUN_MODE").MustString("debug")
-}
-
-func LoadServer() {
-	sec, e := Cfg.GetSection("server")
+	Cfg, e := ini.Load("conf/app.ini")
 	if e != nil {
-		log.Fatalf("Fail to get section 'server' : %v", e)
+		log.Fatalf("Fail to parse 'conf/app.in' : %v", e)
 	}
 
-	RunMode = Cfg.Section("").Key("RUN_MODE").MustString("debug")
+	//不再使用直接读取key的方式，而是用 MapTo 映射到结构体中
+	e = Cfg.Section("app").MapTo(AppSetting)
+	if e != nil {
+		log.Fatalf("Cfg.MapTo AppSetting err: %v", e)
+	}
+	//将  MB  转换为 B
+	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 
-	HttpPort = sec.Key("HTTP_PORT").MustInt(8000)
-	ReadTimeout = time.Duration(sec.Key("READ_TIMEOUT").MustInt(60)) * time.Second
-	WriteTimeout = time.Duration(sec.Key("WRITE_TIMEOUT").MustInt(60)) * time.Second
-}
-
-func LoadApp() {
-	sec, err := Cfg.GetSection("app")
-	if err != nil {
-		log.Fatalf("Fail to get section 'app': %v", err)
+	e = Cfg.Section("server").MapTo(ServerSetting)
+	if e != nil {
+		log.Fatalf("Cfg.MapTo ServerSetting err: %v", e)
 	}
 
-	JwtSecret = sec.Key("JWT_SECRET").MustString("!@)*#)!@U#@*!@!)")
-	PageSize = sec.Key("PAGE_SIZE").MustInt(10)
+	//超时时间单位设置为 秒
+	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
+	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
+
+	e = Cfg.Section("database").MapTo(DataBaseSetting)
+	if e != nil {
+		log.Fatalf("Cfg.MapTo DataBaseSetting err: %v", e)
+	}
+
+	if ServerSetting.RunMode == "debug" {
+		log.Printf("app : %v", AppSetting)
+		log.Printf("server : %v", ServerSetting)
+		log.Printf("database : %v", DataBaseSetting)
+	}
 }
