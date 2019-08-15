@@ -18,22 +18,6 @@ func main() {
 	logging.Setup()
 	models.Setup()
 
-	//简单版本的
-	//router := routers.InitRouter()
-	//
-	//server := &http.Server{
-	//	Addr:           fmt.Sprintf(":%d", setting.HttpPort),
-	//	Handler:        router,
-	//	ReadTimeout:    setting.ReadTimeout,
-	//	WriteTimeout:   setting.WriteTimeout,
-	//	MaxHeaderBytes: 1 << 20,
-	//}
-	//server.RegisterOnShutdown(func() {
-	//	logging.Info("程序关闭。。。。")
-	//})
-	//
-	//server.ListenAndServe()
-
 	// 搭配 endless 热启动版本
 	endless.DefaultReadTimeOut = setting.ServerSetting.ReadTimeout
 	endless.DefaultWriteTimeOut = setting.ServerSetting.WriteTimeout

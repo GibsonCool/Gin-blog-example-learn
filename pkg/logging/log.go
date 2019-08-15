@@ -31,8 +31,12 @@ const (
 
 func Setup() {
 	log.Printf("读取 logging 配置项....")
-	filePath := getLogFileFullPath()
-	F = openLogFile(filePath)
+	filePath := getLogFilePath()
+	fileName := getLogFileName()
+	F, err := openLogFile(fileName, filePath)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }
