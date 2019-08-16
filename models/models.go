@@ -21,8 +21,8 @@ type Model struct {
 // 从映射结构体中获取数据库配置信息
 func Setup() {
 	log.Printf("读取 database 配置项....")
-
-	db, err := gorm.Open(setting.DataBaseSetting.Type,
+	var err error
+	db, err = gorm.Open(setting.DataBaseSetting.Type,
 		fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 			setting.DataBaseSetting.User,
 			setting.DataBaseSetting.Password,
