@@ -4,11 +4,13 @@ import (
 	_ "Gin-blog-example/docs"
 	"Gin-blog-example/middleware/jwt"
 	"Gin-blog-example/pkg/setting"
+	"Gin-blog-example/pkg/upload"
 	"Gin-blog-example/routers/api"
 	v1 "Gin-blog-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"net/http"
 )
 
 //抽离路由规则配置
@@ -21,12 +23,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	// 测试接口
-	//r.GET("/test", func(c *gin.Context) {
-	//	c.JSON(e.SUCCESS, gin.H{
-	//		"msg": "test",
-	//	})
-	//})
+	//配置支持静态资源--》图片的访问
+	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 
 	r.GET("/auth", api.GetAuth)
 
