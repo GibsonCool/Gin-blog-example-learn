@@ -18,7 +18,7 @@ func GetSize(file multipart.File) (int, error) {
 }
 
 //获取文件后缀
-func getExt(fileName string) string {
+func GetExt(fileName string) string {
 	return path.Ext(fileName)
 }
 
@@ -39,9 +39,9 @@ func MkDir(src string) error {
 	return os.MkdirAll(src, os.ModePerm)
 }
 
-//如果存在则新建文件夹
+//如果不存在则新建文件夹
 func IsNotExistMkDir(src string) error {
-	if exist := CheckExist(src); exist == false {
+	if exist := CheckExist(src); exist == true {
 		return MkDir(src)
 	}
 	return nil
