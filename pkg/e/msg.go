@@ -50,4 +50,7 @@ const (
 	DescMaxSize255      = "简述最长为255字符"
 	ContentNotEmpty     = "内容不能为空"
 	ContentMaxSize65535 = "内容最长为65535字符"
+
+	CoverImageUrlNotEmpty   = "封面图片不能为空"
+	CoverImageUrlMaxSize255 = "图片地址最长为255字符"
 )

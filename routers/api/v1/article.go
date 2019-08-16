@@ -117,6 +117,7 @@ func GetArticleList(ctx *gin.Context) {
 // @Param desc body string false "Desc"
 // @Param content body string false "Content"
 // @Param created_by body string false "CreatedBy"
+// @Param cover_image_url body string false "CoverImageUrl"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles [post]
@@ -127,6 +128,7 @@ func AddArticle(ctx *gin.Context) {
 	content := ctx.Query("content")
 	createdBy := ctx.Query("created_by")
 	state := com.StrTo(ctx.DefaultQuery("state", "0")).MustInt()
+	coverImgUrl := ctx.Query("cover_image_url")
 
 	valid := validation.Validation{}
 	valid.Min(tagId, 1, "tag_id").Message(e.TagIdMustGreaterThanZero)
@@ -135,6 +137,8 @@ func AddArticle(ctx *gin.Context) {
 	valid.Required(content, "content").Message(e.ContentNotEmpty)
 	valid.Required(createdBy, "created_by").Message(e.CreatedManNotEmpty)
 	valid.Range(state, 0, 1, "state").Message(e.StateMustZeroOrOne)
+	valid.Required(coverImgUrl, "cover_image_url").Message(e.CoverImageUrlNotEmpty)
+	valid.MaxSize(coverImgUrl, 255, "cover_image_url").Message(e.CoverImageUrlMaxSize255)
 
 	code := e.InvalidParams
 	msg := ""
@@ -147,6 +151,7 @@ func AddArticle(ctx *gin.Context) {
 			data["content"] = content
 			data["created_by"] = createdBy
 			data["state"] = state
+			data["cover_image_url"] = coverImgUrl
 
 			models.AddArticle(data)
 			code = e.SUCCESS
@@ -189,6 +194,7 @@ func EditArticle(ctx *gin.Context) {
 	desc := ctx.Query("desc")
 	content := ctx.Query("content")
 	modifiedBy := ctx.Query("modified_by")
+	coverImgUrl := ctx.Query("cover_image_url")
 
 	var (
 		state = -1
@@ -208,6 +214,7 @@ func EditArticle(ctx *gin.Context) {
 	valid.MaxSize(content, 65535, "content").Message(e.ContentMaxSize65535)
 	valid.Required(modifiedBy, "modified_by").Message(e.ModifiedManNotEmpty)
 	valid.MaxSize(modifiedBy, 100, "modified_by").Message(e.ModifiedManMaxSize100)
+	valid.MaxSize(coverImgUrl, 255, "cover_image_url").Message(e.CoverImageUrlMaxSize255)
 
 	if !valid.HasErrors() {
 		if models.ExistArticleByID(id) {
@@ -227,6 +234,10 @@ func EditArticle(ctx *gin.Context) {
 
 				if content != "" {
 					data["content"] = content
+				}
+
+				if coverImgUrl != "" {
+					data["cover_image_url"] = coverImgUrl
 				}
 
 				data["modified_by"] = modifiedBy
