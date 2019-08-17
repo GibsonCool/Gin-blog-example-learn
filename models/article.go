@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
 type Article struct {
@@ -30,36 +30,64 @@ type Article struct {
 //	return nil
 //}
 
-func ExistArticleByID(id int) bool {
+// ExistArticleByID 通过 id 检测文章是或否已经存在
+func ExistArticleByID(id int) (bool, error) {
 	var article Article
-	db.Select("id").Where("id = ?", id).First(&article)
-	fmt.Printf("查询结果  %d ：   %v", id, article)
-	return article.ID > 0
+	err := db.Select("id").Where("id = ?", id).First(&article).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
+	}
+	if article.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
-func GetArticleTotal(maps interface{}) (count int) {
-	db.Model(&Article{}).Where(maps).Count(&count)
-	return
+// GetArticleTotal 获取文章的总数
+func GetArticleTotal(maps interface{}) (int, error) {
+	var count int
+	if err := db.Model(&Article{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, nil
+	}
+
+	return count, nil
 }
 
-func GetArticleList(pageNum int, pageSize int, maps interface{}) (article []Article) {
-	db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&article)
-	return
+// GetArticleList 根据分页条件获取文章列表信息
+func GetArticleList(pageNum int, pageSize int, maps interface{}) ([]*Article, error) {
+	var articles []*Article
+	err := db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return articles, nil
 }
 
-func GetArticle(id int) (article Article) {
-	db.Where("id = ?", id).First(&article)
-	db.Model(&article).Related(&article.Tag)
-	return
+// GetArticle 通过 id 获取单个文章信息
+func GetArticle(id int) (*Article, error) {
+	var article Article
+	err := db.Where("id = ?", id).First(&article).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	err = db.Model(&article).Related(&article.Tag).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return &article, nil
 }
 
-func EditArticle(id int, data interface{}) bool {
-	db.Model(&Article{}).Where("id = ?", id).Update(data)
-	return true
+// EditArticle 根据 id 编辑文章信息
+func EditArticle(id int, data interface{}) error {
+	if err := db.Model(&Article{}).Where("id = ?", id).Update(data).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func AddArticle(data map[string]interface{}) bool {
-	db.Create(&Article{
+// AddArticle 新增一个文章
+func AddArticle(data map[string]interface{}) error {
+	err := db.Create(&Article{
 		TagId:         data["tag_id"].(int),
 		Title:         data["title"].(string),
 		Desc:          data["desc"].(string),
@@ -67,18 +95,28 @@ func AddArticle(data map[string]interface{}) bool {
 		CreatedBy:     data["created_by"].(string),
 		State:         data["state"].(int),
 		CoverImageUrl: data["cover_image_url"].(string),
-	})
-	return true
+	}).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func DeleteArticle(id int) bool {
-	db.Where("id = ?", id).Delete(&Article{})
-	return true
+// DeleteArticle 通过 id 删除指定文章
+func DeleteArticle(id int) error {
+	if err := db.Where("id = ?", id).Delete(&Article{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // 硬删除标签
-func CleanAllArticle() bool {
+func CleanAllArticle() error {
 	// 使用 Unscoped 查找软删除的记录并执行硬删除
-	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
-	return true
+	if err := db.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{}).Error; err != nil {
+		return err
+	}
+	return nil
 }

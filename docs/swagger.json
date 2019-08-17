@@ -14,16 +14,20 @@
                 "summary": "获取多个文章",
                 "parameters": [
                     {
-                        "type": "integer",
                         "description": "TagId",
                         "name": "tag_id",
-                        "in": "path"
+                        "in": "body",
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
-                        "type": "integer",
                         "description": "State",
                         "name": "state",
-                        "in": "path"
+                        "in": "body",
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
@@ -52,6 +56,7 @@
                         "description": "TagId",
                         "name": "tag_id",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -60,6 +65,7 @@
                         "description": "State",
                         "name": "state",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -68,6 +74,7 @@
                         "description": "Title",
                         "name": "title",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -76,6 +83,7 @@
                         "description": "Desc",
                         "name": "desc",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -84,6 +92,7 @@
                         "description": "Content",
                         "name": "content",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -92,6 +101,16 @@
                         "description": "CreatedBy",
                         "name": "created_by",
                         "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "CoverImageUrl",
+                        "name": "cover_image_url",
+                        "in": "body",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -199,8 +218,16 @@
                         }
                     },
                     {
-                        "description": "CreatedBy",
-                        "name": "created_by",
+                        "description": "ModifiedBy",
+                        "name": "modified_by",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "CoverImageUrl",
+                        "name": "cover_image_url",
                         "in": "body",
                         "schema": {
                             "type": "string"
@@ -228,6 +255,15 @@
                     "application/json"
                 ],
                 "summary": "删除文章",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -253,12 +289,16 @@
                 "summary": "获取多个标签",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "Name",
                         "name": "name",
-                        "in": "body",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "State",
+                        "name": "state",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -341,20 +381,20 @@
                         "required": true
                     },
                     {
+                        "description": "State",
+                        "name": "state",
+                        "in": "body",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
                         "description": "ModifiedBy",
                         "name": "modified_by",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "description": "State",
-                        "name": "state",
-                        "in": "body",
-                        "schema": {
-                            "type": "integer"
                         }
                     }
                 ],
@@ -379,6 +419,15 @@
                     "application/json"
                 ],
                 "summary": "删除标签",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -398,28 +447,21 @@
         "/auth": {
             "get": {
                 "description": "通过账号信息获取token用于其他接口鉴权使用",
-                "produces": [
-                    "application/json"
-                ],
                 "summary": "获取token",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "UserName",
                         "name": "username",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "PassWord",
                         "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

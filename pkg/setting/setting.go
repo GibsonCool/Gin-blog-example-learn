@@ -38,10 +38,19 @@ type DataBase struct {
 	TablePrefix string
 }
 
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
 var (
 	AppSetting      = &App{}
 	ServerSetting   = &Server{}
 	DataBaseSetting = &DataBase{}
+	RedisSetting    = &Redis{}
 )
 
 /*
@@ -49,39 +58,34 @@ var (
 	使用 MapTo 将配置项映射到结构上面定义的结构体上
 	对一些特殊设置的配置项进行在赋值
 */
-func Setup() {
-	log.Printf("读取 app.ini 配置项....")
+var cfg *ini.File
 
-	Cfg, e := ini.Load("conf/app.ini")
+func Setup() {
+	var e error
+	cfg, e = ini.Load("conf/app.ini")
 	if e != nil {
 		log.Fatalf("Fail to parse 'conf/app.in' : %v", e)
 	}
 
-	//不再使用直接读取key的方式，而是用 MapTo 映射到结构体中
-	e = Cfg.Section("app").MapTo(AppSetting)
-	if e != nil {
-		log.Fatalf("Cfg.MapTo AppSetting err: %v", e)
-	}
+	mapTo("app", AppSetting)
+	mapTo("server", ServerSetting)
+	mapTo("database", DataBaseSetting)
+	mapTo("redis", RedisSetting)
+
 	//将  MB  转换为 B
 	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
-
-	e = Cfg.Section("server").MapTo(ServerSetting)
-	if e != nil {
-		log.Fatalf("Cfg.MapTo ServerSetting err: %v", e)
-	}
 
 	//超时时间单位设置为 秒
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 
-	e = Cfg.Section("database").MapTo(DataBaseSetting)
-	if e != nil {
-		log.Fatalf("Cfg.MapTo DataBaseSetting err: %v", e)
-	}
+	RedisSetting.IdleTimeout = RedisSetting.IdleTimeout * time.Second
 
-	if ServerSetting.RunMode == "debug" {
-		log.Printf("app : %v", AppSetting)
-		log.Printf("server : %v", ServerSetting)
-		log.Printf("database : %v", DataBaseSetting)
+}
+
+func mapTo(section string, v interface{}) {
+	e := cfg.Section(section).MapTo(v)
+	if e != nil {
+		log.Fatalf("cfg.MapTo %sSetting err: %v", section, e)
 	}
 }

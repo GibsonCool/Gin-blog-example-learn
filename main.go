@@ -2,6 +2,7 @@ package main
 
 import (
 	"Gin-blog-example/models"
+	"Gin-blog-example/pkg/gredis"
 	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/routers"
@@ -17,6 +18,7 @@ func main() {
 	setting.Setup()
 	logging.Setup()
 	models.Setup()
+	gredis.Setup()
 
 	// 搭配 endless 热启动版本
 	endless.DefaultReadTimeOut = setting.ServerSetting.ReadTimeout

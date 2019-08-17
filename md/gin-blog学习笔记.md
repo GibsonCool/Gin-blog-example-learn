@@ -5,12 +5,14 @@
 Gin-blog-example/
 ├── conf                    //用于存储配置文件
 ├── data                    //MySQL数据挂载卷目录 
+├── docs                    //swagger 生成的 api 文档相关信息
+├── md                      //笔记markdown    
 ├── middleware              //应用中间件
 ├── models                  //引用数据库模型
 ├── pkg                     //第三方包
 ├── routers                 //路由处理逻辑
-├── md                      //笔记文档
-└── runtime                 //应用运行时数据
+├── runtime                 //应用运行时数据
+└── service                 //抽离封装 api 业务逻辑，进行缓存，DB操作包装
 
 ```
 

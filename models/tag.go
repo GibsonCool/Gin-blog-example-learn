@@ -1,5 +1,7 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 // 创建 Tag struct 用于 Gorm 使用。并给予附属属性 json。便于在接口返回数据的时候自动转换格式
 type Tag struct {
 	Model
@@ -34,63 +36,95 @@ type Tag struct {
 //}
 
 //从数据库查询tags
-func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
-	return
+func GetTags(pageNum int, pageSize int, maps interface{}) ([]Tag, error) {
+	var (
+		tags []Tag
+		err  error
+	)
+	if pageSize > 0 && pageNum > 0 {
+		err = db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags).Error
+	} else {
+		err = db.Where(maps).Find(&tags).Error
+	}
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return tags, nil
 }
 
 //获取tags总数量
-func GetTagTotal(maps interface{}) (count int) {
-	db.Model(&Tag{}).Where(maps).Count(&count)
-	return
+func GetTagTotal(maps interface{}) (int, error) {
+	var count int
+	if err := db.Model(&Tag{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 //查询某个tag是否存在 by name
-func ExistTagByName(name string) bool {
+func ExistTagByName(name string) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("name = ?", name).First(&tag)
-	if tag.ID > 0 {
-		return true
+	e := db.Select("id").Where("name = ?", name).First(&tag).Error
+	if e != nil && e != gorm.ErrRecordNotFound {
+		return false, e
 	}
-	return false
+
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 //增加tag
-func AddTag(name string, state int, createdBy string) bool {
-	db.Create(&Tag{
+func AddTag(name string, state int, createdBy string) error {
+	err := db.Create(&Tag{
 		Name:      name,
 		State:     state,
 		CreatedBy: createdBy,
-	})
+	}).Error
+	if err != nil {
+		return err
+	}
 
-	return true
+	return nil
 }
 
 //查询某个tag是否存在 by id
-func ExistTagByID(id int) bool {
+func ExistTagByID(id int) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("id = ?", id).First(&tag)
-	if tag.ID > 0 {
-		return true
+	err := db.Select("id").Where("id = ?", id).First(&tag).Error
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return false, err
 	}
-	return false
+
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 //根据 id 删除某个tag
-func DeleteTag(id int) bool {
-	db.Where("id = ?", id).Delete(&Tag{})
-	return true
+func DeleteTag(id int) error {
+	if err := db.Where("id = ?", id).Delete(&Tag{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 //根据 id 修改某个tag信息
-func EditTag(id int, data interface{}) bool {
-	db.Model(&Tag{}).Where("id = ?", id).Update(data)
-	return true
+func EditTag(id int, data interface{}) error {
+	if err := db.Model(&Tag{}).Where("id = ?", id).Update(data).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // 硬删除标签
-func CleanAllTag() bool {
+func CleanAllTag() (bool, error) {
 	// 使用 Unscoped 查找软删除的记录并删除
-	db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
-	return true
+	if err := db.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{}).Error; err != nil {
+		return false, err
+	}
+	return true, nil
 }

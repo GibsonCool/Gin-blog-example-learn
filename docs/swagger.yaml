@@ -17,13 +17,15 @@ paths:
       description: 可通过可选参数获取符合条件的文章列表
       parameters:
       - description: TagId
-        in: path
+        in: body
         name: tag_id
-        type: integer
+        schema:
+          type: integer
       - description: State
-        in: path
+        in: body
         name: state
-        type: integer
+        schema:
+          type: integer
       produces:
       - application/json
       responses:
@@ -42,31 +44,43 @@ paths:
       - description: TagId
         in: body
         name: tag_id
+        required: true
         schema:
           type: integer
       - description: State
         in: body
         name: state
+        required: true
         schema:
           type: integer
       - description: Title
         in: body
         name: title
+        required: true
         schema:
           type: string
       - description: Desc
         in: body
         name: desc
+        required: true
         schema:
           type: string
       - description: Content
         in: body
         name: content
+        required: true
         schema:
           type: string
       - description: CreatedBy
         in: body
         name: created_by
+        required: true
+        schema:
+          type: string
+      - description: CoverImageUrl
+        in: body
+        name: cover_image_url
+        required: true
         schema:
           type: string
       produces:
@@ -84,6 +98,12 @@ paths:
   /api/v1/articles/{id}:
     delete:
       description: 根据文章id 删除对应文章信息
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -149,9 +169,14 @@ paths:
         name: content
         schema:
           type: string
-      - description: CreatedBy
+      - description: ModifiedBy
         in: body
-        name: created_by
+        name: modified_by
+        schema:
+          type: string
+      - description: CoverImageUrl
+        in: body
+        name: cover_image_url
         schema:
           type: string
       produces:
@@ -171,10 +196,13 @@ paths:
       description: 可选参数 tagName。获取标签列表
       parameters:
       - description: Name
-        in: body
+        in: query
         name: name
-        schema:
-          type: string
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
       produces:
       - application/json
       responses:
@@ -221,6 +249,12 @@ paths:
   /api/v1/tags/{id}:
     delete:
       description: 根据标签id 删除对应标签信息
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -241,17 +275,17 @@ paths:
         name: id
         required: true
         type: integer
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
       - description: ModifiedBy
         in: body
         name: modified_by
         required: true
         schema:
           type: string
-      - description: State
-        in: body
-        name: state
-        schema:
-          type: integer
       produces:
       - application/json
       responses:
@@ -269,19 +303,15 @@ paths:
       description: 通过账号信息获取token用于其他接口鉴权使用
       parameters:
       - description: UserName
-        in: body
+        in: query
         name: username
         required: true
-        schema:
-          type: string
+        type: string
       - description: PassWord
-        in: body
+        in: query
         name: password
         required: true
-        schema:
-          type: string
-      produces:
-      - application/json
+        type: string
       responses:
         "200":
           description: OK
