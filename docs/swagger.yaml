@@ -26,6 +26,11 @@ paths:
         name: state
         schema:
           type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -83,6 +88,11 @@ paths:
         required: true
         schema:
           type: string
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -104,6 +114,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -124,6 +139,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -179,6 +199,11 @@ paths:
         name: cover_image_url
         schema:
           type: string
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -203,6 +228,11 @@ paths:
         in: query
         name: state
         type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -228,6 +258,11 @@ paths:
         name: state
         schema:
           type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       - description: CreatedBy
         in: body
         name: created_by
@@ -255,6 +290,11 @@ paths:
         name: id
         required: true
         type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -286,6 +326,11 @@ paths:
         required: true
         schema:
           type: string
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -298,6 +343,37 @@ paths:
           schema:
             $ref: '#/definitions/models.BaseResp'
       summary: 修改标签信息
+  /api/v1/tags/export:
+    post:
+      description: 导出所有标签为 .xlsx 文件
+      parameters:
+      - description: Name
+        in: body
+        name: name
+        schema:
+          type: integer
+      - description: State
+        in: body
+        name: state
+        schema:
+          type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 导出标签
   /auth:
     get:
       description: 通过账号信息获取token用于其他接口鉴权使用

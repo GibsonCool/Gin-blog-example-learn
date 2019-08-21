@@ -17,6 +17,7 @@ import (
 // @Description 通过文章 id 获取文章信息
 // @Produce json
 // @Param id path int true "ID"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles/{id} [get]
@@ -59,6 +60,7 @@ func GetArticle(ctx *gin.Context) {
 // @Produce json
 // @Param tag_id body int false "TagId"
 // @Param state body int false "State"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles [get]
@@ -129,6 +131,7 @@ type AddArticleForm struct {
 // @Param content body string true "Content"
 // @Param created_by body string true "CreatedBy"
 // @Param cover_image_url body string true "CoverImageUrl"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles [post]
@@ -194,6 +197,7 @@ type EditArticleForm struct {
 // @Param content body string false "Content"
 // @Param modified_by body string false "ModifiedBy"
 // @Param cover_image_url body string false "CoverImageUrl"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles/{id} [put]
@@ -257,6 +261,7 @@ func EditArticle(ctx *gin.Context) {
 // @Description 根据文章id 删除对应文章信息
 // @Produce json
 // @Param id path int true "ID"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/articles/{id} [delete]

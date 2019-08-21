@@ -136,6 +136,10 @@ Gin-blog-example/
 > 识别出当前文件根目录下的文件和文件夹。这个 `dep` 的作用主要就是将自己依赖 `$GOPATH`   
 > 的第三方库 copy  到自己项目的根目录新建文件夹 'vendor' 下。仅仅供自己使用，如此一来  
 > 构建镜像的时候所有依赖的完整代码都有了就可以构建通过了
+> ```
+> dep init -gopath -v
+> ```
+> 该命令会先从`$GOPATH`查找既有的依赖包，若不存在则从对应网络资源处下载
 >> [Go依赖管理工具dep](https://eddycjy.gitbook.io/golang/di-2-ke-bao-guan-li/dep)  
 >> [docker构建golang分布式带依赖库项目镜像](https://blog.csdn.net/u012740992/article/details/91841021)
 >    

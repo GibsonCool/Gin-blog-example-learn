@@ -3,6 +3,7 @@ package routers
 import (
 	_ "Gin-blog-example/docs"
 	"Gin-blog-example/middleware/jwt"
+	"Gin-blog-example/pkg/export"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/upload"
 	"Gin-blog-example/routers/api"
@@ -25,6 +26,7 @@ func InitRouter() *gin.Engine {
 
 	//配置支持静态资源--》图片的访问
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
+	r.StaticFS("/export", http.Dir(export.GetExcelFullPath()))
 
 	r.GET("/auth", api.GetAuth)
 
@@ -44,6 +46,8 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/tags/:id", v1.EditTag)
 		//删除指定标签
 		apiv1.DELETE("/tags/:id", v1.DeleteTag)
+		//导出标签
+		apiv1.POST("/tags/export", v1.ExportTag)
 
 		//获取文章列表
 		apiv1.GET("/articles", v1.GetArticleList)

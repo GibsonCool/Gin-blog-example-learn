@@ -3,6 +3,7 @@ package v1
 import (
 	"Gin-blog-example/pkg/app"
 	"Gin-blog-example/pkg/e"
+	"Gin-blog-example/pkg/export"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"Gin-blog-example/service/tag_service"
@@ -17,6 +18,7 @@ import (
 // @Produce json
 // @Param name query string false "Name"
 // @Param state query int false "State"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/tags [get]
@@ -67,6 +69,7 @@ type AddTagForm struct {
 // @Produce json
 // @Param name body int true "Name"
 // @Param state body int false "State"
+// @Param token query string true "token"
 // @Param created_by body string true "CreatedBy"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -120,6 +123,7 @@ type EditTagForm struct {
 // @Param id path int true "ID"
 // @Param state body int false "State"
 // @Param modified_by body string true "ModifiedBy"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/tags/{id} [put]
@@ -166,6 +170,7 @@ func EditTag(ctx *gin.Context) {
 // @Description 根据标签id 删除对应标签信息
 // @Produce json
 // @Param id path int true "ID"
+// @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/tags/{id} [delete]
@@ -198,4 +203,41 @@ func DeleteTag(ctx *gin.Context) {
 	}
 
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
+}
+
+// @Summary 导出标签
+// @Description 导出所有标签为 .xlsx 文件
+// @Produce json
+// @Param name body int false "Name"
+// @Param state body int false "State"
+// @Param token query string true "token"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/tags/export [post]
+func ExportTag(ctx *gin.Context) {
+	appG := app.Gin{C: ctx}
+
+	name := ctx.PostForm("name")
+	state := -1
+	if arg := ctx.PostForm("state"); arg != "" {
+		state = com.StrTo(arg).MustInt()
+	}
+
+	tageService := tag_service.Tag{
+		Name:  name,
+		State: state,
+	}
+
+	filename, err := tageService.Export()
+	if err != nil {
+		appG.Response(http.StatusOK, e.ErrorExportTagFail, err.Error())
+		return
+	}
+
+	data := map[string]string{
+		"export_url":      export.GetExcelFullUrl(filename),
+		"export_sava_url": export.GetExcelFullPath() + filename,
+	}
+	appG.Response(http.StatusOK, e.SUCCESS, data)
+
 }

@@ -2,10 +2,17 @@ package tag_service
 
 import (
 	"Gin-blog-example/models"
+	"Gin-blog-example/pkg/export"
+	"Gin-blog-example/pkg/file"
 	"Gin-blog-example/pkg/gredis"
 	"Gin-blog-example/pkg/logging"
+	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/service/cache_service"
 	"encoding/json"
+	"github.com/Unknwon/com"
+	"github.com/tealeg/xlsx"
+	"strconv"
+	"time"
 )
 
 type Tag struct {
@@ -81,82 +88,6 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 	return tags, nil
 }
 
-//func (t *Tag) Export() (string, error) {
-//	tags, err := t.GetAll()
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	xlsFile := xlsx.NewFile()
-//	sheet, err := xlsFile.AddSheet("标签信息")
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	titles := []string{"ID", "名称", "创建人", "创建时间", "修改人", "修改时间"}
-//	row := sheet.AddRow()
-//
-//	var cell *xlsx.Cell
-//	for _, title := range titles {
-//		cell = row.AddCell()
-//		cell.Value = title
-//	}
-//
-//	for _, v := range tags {
-//		values := []string{
-//			strconv.Itoa(v.ID),
-//			v.Name,
-//			v.CreatedBy,
-//			strconv.Itoa(v.CreatedOn),
-//			v.ModifiedBy,
-//			strconv.Itoa(v.ModifiedOn),
-//		}
-//
-//		row = sheet.AddRow()
-//		for _, value := range values {
-//			cell = row.AddCell()
-//			cell.Value = value
-//		}
-//	}
-//
-//	time := strconv.Itoa(int(time.Now().Unix()))
-//	filename := "tags-" + time + export.EXT
-//
-//	dirFullPath := export.GetExcelFullPath()
-//	err = file.IsNotExistMkDir(dirFullPath)
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	err = xlsFile.Save(dirFullPath + filename)
-//	if err != nil {
-//		return "", err
-//	}
-//
-//	return filename, nil
-//}
-//
-//func (t *Tag) Import(r io.Reader) error {
-//	xlsx, err := excelize.OpenReader(r)
-//	if err != nil {
-//		return err
-//	}
-//
-//	rows := xlsx.GetRows("标签信息")
-//	for irow, row := range rows {
-//		if irow > 0 {
-//			var data []string
-//			for _, cell := range row {
-//				data = append(data, cell)
-//			}
-//
-//			models.AddTag(data[1], 1, data[2])
-//		}
-//	}
-//
-//	return nil
-//}
-
 func (t *Tag) getMaps() map[string]interface{} {
 	maps := make(map[string]interface{})
 	maps["deleted_on"] = 0
@@ -169,4 +100,70 @@ func (t *Tag) getMaps() map[string]interface{} {
 	}
 
 	return maps
+}
+
+// Export 导出标签 Excel 文件
+func (t *Tag) Export() (string, error) {
+
+	tags, e := t.GetAll()
+	if e != nil {
+		return "", e
+	}
+
+	tagFile := xlsx.NewFile()
+	//新增一个 sheet
+	sheet, e := tagFile.AddSheet("标签信息")
+	if e != nil {
+		return "", e
+	}
+
+	//定义单元格名称
+	titles := []string{"ID", "名称", "创建人", "创建时间", "修改人", "修改时间"}
+	//新增一行
+	row := sheet.AddRow()
+
+	var cell *xlsx.Cell
+
+	//将单元格名称插入到第一行
+	for _, title := range titles {
+		//将单元格出入当前行
+		cell = row.AddCell()
+		cell.Value = title
+	}
+
+	for _, v := range tags {
+		values := []string{
+			strconv.Itoa(v.ID),
+			v.Name,
+			v.CreatedBy,
+			com.Date(int64(v.CreatedOn), setting.AppSetting.TimeFormat),
+			v.ModifiedBy,
+			com.Date(int64(v.ModifiedOn), setting.AppSetting.TimeFormat),
+		}
+
+		row = sheet.AddRow()
+
+		for _, value := range values {
+			cell = row.AddCell()
+			cell.Value = value
+		}
+	}
+
+	time := strconv.Itoa(int(time.Now().Unix()))
+
+	filename := "tags-" + time + export.EXT
+	dirFullPath := export.GetExcelFullPath()
+	e = file.IsNotExistMkDir(dirFullPath)
+	if e != nil {
+		return "", e
+	}
+
+	fullPath := dirFullPath + filename
+	e = tagFile.Save(fullPath)
+	if e != nil {
+		return "", e
+	}
+
+	return filename, nil
+
 }
