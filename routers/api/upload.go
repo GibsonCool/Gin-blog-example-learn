@@ -9,6 +9,13 @@ import (
 	"net/http"
 )
 
+// @Summary 上传图片
+// @Accept	mpfd
+// @Produce  json
+// @Param image formData file true "Image File"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /upload [post]
 func UploadImage(ctx *gin.Context) {
 	appG := app.Gin{C: ctx}
 

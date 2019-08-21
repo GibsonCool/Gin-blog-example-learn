@@ -11,6 +11,8 @@ import (
 	"encoding/json"
 	"github.com/Unknwon/com"
 	"github.com/tealeg/xlsx"
+	"github.com/xuri/excelize"
+	"io"
 	"strconv"
 	"time"
 )
@@ -165,5 +167,31 @@ func (t *Tag) Export() (string, error) {
 	}
 
 	return filename, nil
+}
 
+//导入标签
+func (t *Tag) Import(r io.Reader) error {
+	xlsx, e := excelize.OpenReader(r)
+	if e != nil {
+		return e
+	}
+
+	//获取某张 sheet 的所有行信息
+	rows, e := xlsx.GetRows("标签信息")
+	if e != nil {
+		return e
+	}
+
+	for irow, row := range rows {
+		if irow > 0 {
+			var data []string
+			for _, cell := range row {
+				data = append(data, cell)
+			}
+
+			models.AddTag(data[1], 1, data[2])
+		}
+	}
+
+	return nil
 }

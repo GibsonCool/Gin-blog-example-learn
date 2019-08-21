@@ -374,6 +374,33 @@ paths:
           schema:
             $ref: '#/definitions/models.BaseResp'
       summary: 导出标签
+  /api/v1/tags/import:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Excel file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 导入标签文件
   /auth:
     get:
       description: 通过账号信息获取token用于其他接口鉴权使用
@@ -398,4 +425,26 @@ paths:
           schema:
             $ref: '#/definitions/models.BaseResp'
       summary: 获取token
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Image File
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 上传图片
 swagger: "2.0"

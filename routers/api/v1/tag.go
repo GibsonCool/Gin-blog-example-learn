@@ -4,6 +4,7 @@ import (
 	"Gin-blog-example/pkg/app"
 	"Gin-blog-example/pkg/e"
 	"Gin-blog-example/pkg/export"
+	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"Gin-blog-example/service/tag_service"
@@ -240,4 +241,33 @@ func ExportTag(ctx *gin.Context) {
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, data)
 
+}
+
+//@Summary 导入标签文件
+//@Accept	mpfd
+//@Produce  json
+//@Param file formData file true "Excel file"
+//@Param token query string true "token"
+//@Success 200 {object} models.BaseResp
+//@Failure 500 {object} models.BaseResp
+//@Router /api/v1/tags/import [post]
+func ImportTag(ctx *gin.Context) {
+	appG := app.Gin{C: ctx}
+	file, _, err := ctx.Request.FormFile("file")
+
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ERROR, nil)
+		return
+	}
+
+	tagService := tag_service.Tag{}
+	err = tagService.Import(file)
+	if err != nil {
+		logging.Warn(err)
+		appG.Response(http.StatusOK, e.ErrorImportTagFail, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
