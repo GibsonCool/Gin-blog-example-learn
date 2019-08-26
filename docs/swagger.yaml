@@ -8,24 +8,41 @@ definitions:
       msg:
         type: string
     type: object
+  v1.AddArticleForm:
+    properties:
+      content:
+        type: string
+      coverImageUrl:
+        type: string
+      createdBy:
+        type: string
+      desc:
+        type: string
+      state:
+        type: integer
+      tagID:
+        type: integer
+      title:
+        type: string
+    type: object
 info:
   contact: {}
   license: {}
 paths:
   /api/v1/articles:
     get:
+      consumes:
+      - multipart/form-data
       description: 可通过可选参数获取符合条件的文章列表
       parameters:
       - description: TagId
-        in: body
+        in: query
         name: tag_id
-        schema:
-          type: integer
+        type: integer
       - description: State
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
+        type: integer
       - description: token
         in: query
         name: token
@@ -46,48 +63,13 @@ paths:
     post:
       description: 可通过可选参数 tag_id 获取同标签下的所有文章信息
       parameters:
-      - description: TagId
+      - description: '{json内容}'
         in: body
-        name: tag_id
+        name: article
         required: true
         schema:
-          type: integer
-      - description: State
-        in: body
-        name: state
-        required: true
-        schema:
-          type: integer
-      - description: Title
-        in: body
-        name: title
-        required: true
-        schema:
-          type: string
-      - description: Desc
-        in: body
-        name: desc
-        required: true
-        schema:
-          type: string
-      - description: Content
-        in: body
-        name: content
-        required: true
-        schema:
-          type: string
-      - description: CreatedBy
-        in: body
-        name: created_by
-        required: true
-        schema:
-          type: string
-      - description: CoverImageUrl
-        in: body
-        name: cover_image_url
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/v1.AddArticleForm'
+          type: object
       - description: token
         in: query
         name: token
@@ -157,6 +139,8 @@ paths:
             $ref: '#/definitions/models.BaseResp'
       summary: 获取单个文章
     put:
+      consumes:
+      - multipart/form-data
       description: 根据文章 id 修改文章属性信息
       parameters:
       - description: ID
@@ -165,40 +149,33 @@ paths:
         required: true
         type: integer
       - description: TagId
-        in: body
+        in: formData
         name: tag_id
-        schema:
-          type: integer
+        type: integer
       - description: State
-        in: body
+        in: formData
         name: state
-        schema:
-          type: integer
+        type: integer
       - description: Title
-        in: body
+        in: formData
         name: title
-        schema:
-          type: string
+        type: string
       - description: Desc
-        in: body
+        in: formData
         name: desc
-        schema:
-          type: string
+        type: string
       - description: Content
-        in: body
+        in: formData
         name: content
-        schema:
-          type: string
+        type: string
       - description: ModifiedBy
-        in: body
+        in: formData
         name: modified_by
-        schema:
-          type: string
+        type: string
       - description: CoverImageUrl
-        in: body
+        in: formData
         name: cover_image_url
-        schema:
-          type: string
+        type: string
       - description: token
         in: query
         name: token
@@ -216,6 +193,37 @@ paths:
           schema:
             $ref: '#/definitions/models.BaseResp'
       summary: 修改文章信息
+  /api/v1/articles/export:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 导出所有文章为 .xlsx 文件
+      parameters:
+      - description: 文章标题
+        in: formData
+        name: title
+        type: string
+      - description: State
+        in: formData
+        name: state
+        type: integer
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 导出文章
   /api/v1/tags:
     get:
       description: 可选参数 tagName。获取标签列表

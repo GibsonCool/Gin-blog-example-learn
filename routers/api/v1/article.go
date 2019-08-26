@@ -3,6 +3,7 @@ package v1
 import (
 	"Gin-blog-example/pkg/app"
 	"Gin-blog-example/pkg/e"
+	"Gin-blog-example/pkg/export"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"Gin-blog-example/service/article_service"
@@ -57,9 +58,10 @@ func GetArticle(ctx *gin.Context) {
 
 // @Summary 获取多个文章
 // @Description 可通过可选参数获取符合条件的文章列表
+// @Accept	mpfd
 // @Produce json
-// @Param tag_id body int false "TagId"
-// @Param state body int false "State"
+// @Param tag_id query int false "TagId"
+// @Param state query int false "State"
 // @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -70,13 +72,13 @@ func GetArticleList(ctx *gin.Context) {
 	valid := validation.Validation{}
 
 	state := -1
-	if arg := ctx.PostForm("state"); arg != "" {
+	if arg := ctx.Query("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
 		valid.Range(state, 0, 1, "state").Message("状态只能为0或1")
 	}
 
 	tagId := -1
-	if arg := ctx.PostForm("tag_id"); arg != "" {
+	if arg := ctx.Query("tag_id"); arg != "" {
 		tagId = com.StrTo(arg).MustInt()
 		valid.Min(tagId, 1, "tag_id").Message("标签 ID 必须大于0")
 	}
@@ -112,25 +114,19 @@ func GetArticleList(ctx *gin.Context) {
 }
 
 type AddArticleForm struct {
-	TagID         int    `form:"tag_id" valid:"Required;Min(1)"`
-	Title         string `form:"title" valid:"Required;MaxSize(100)"`
-	Desc          string `form:"desc" valid:"Required;MaxSize(255)"`
-	Content       string `form:"content" valid:"Required;MaxSize(65535)"`
-	CreatedBy     string `form:"created_by" valid:"Required;MaxSize(100)"`
-	CoverImageUrl string `form:"cover_image_url" valid:"Required;MaxSize(255)"`
-	State         int    `form:"state" valid:"Range(0,1)"`
+	TagID         int    `json:"tagID"  valid:"Required;Min(1)"`
+	Title         string `json:"title"  valid:"Required;MaxSize(100)"`
+	Desc          string `json:"desc"  valid:"Required;MaxSize(255)"`
+	Content       string `json:"content"  valid:"Required;MaxSize(65535)"`
+	CreatedBy     string `json:"createdBy" valid:"Required;MaxSize(100)"`
+	CoverImageUrl string `json:"coverImageUrl"  valid:"Required;MaxSize(255)"`
+	State         int    `json:"state"  valid:"Range(0,1)"`
 }
 
 // @Summary 新增文章
 // @Description 可通过可选参数 tag_id 获取同标签下的所有文章信息
 // @Produce json
-// @Param tag_id body int true "TagId"
-// @Param state body int true "State"
-// @Param title body string true "Title"
-// @Param desc body string true "Desc"
-// @Param content body string true "Content"
-// @Param created_by body string true "CreatedBy"
-// @Param cover_image_url body string true "CoverImageUrl"
+// @Param article body v1.AddArticleForm true "{json内容}"
 // @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -176,27 +172,28 @@ func AddArticle(ctx *gin.Context) {
 }
 
 type EditArticleForm struct {
-	ID            int    `form:"id" valid:"Required;Min(1)"`
-	TagID         int    `form:"tag_id" valid:"Required;Min(1)"`
-	Title         string `form:"title" valid:"Required;MaxSize(100)"`
-	Desc          string `form:"desc" valid:"Required;MaxSize(255)"`
-	Content       string `form:"content" valid:"Required;MaxSize(65535)"`
-	ModifiedBy    string `form:"modified_by" valid:"Required;MaxSize(100)"`
-	CoverImageUrl string `form:"cover_image_url" valid:"Required;MaxSize(255)"`
+	ID            int    `form:"id" valid:"Min(1)"`
+	TagID         int    `form:"tag_id" valid:"Min(1)"`
+	Title         string `form:"title" valid:"MaxSize(100)"`
+	Desc          string `form:"desc" valid:"MaxSize(255)"`
+	Content       string `form:"content" valid:"MaxSize(65535)"`
+	ModifiedBy    string `form:"modified_by" valid:"MaxSize(100)"`
+	CoverImageUrl string `form:"cover_image_url" valid:"MaxSize(255)"`
 	State         int    `form:"state" valid:"Range(0,1)"`
 }
 
 // @Summary 修改文章信息
 // @Description 根据文章 id 修改文章属性信息
+// @Accept	mpfd
 // @Produce json
 // @Param id path int true "ID"
-// @Param tag_id body int false "TagId"
-// @Param state body int false "State"
-// @Param title body string false "Title"
-// @Param desc body string false "Desc"
-// @Param content body string false "Content"
-// @Param modified_by body string false "ModifiedBy"
-// @Param cover_image_url body string false "CoverImageUrl"
+// @Param tag_id formData int false "TagId"
+// @Param state formData int false "State"
+// @Param title formData string false "Title"
+// @Param desc formData string false "Desc"
+// @Param content formData string false "Content"
+// @Param modified_by formData string false "ModifiedBy"
+// @Param cover_image_url formData string false "CoverImageUrl"
 // @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -297,4 +294,41 @@ func DeleteArticle(ctx *gin.Context) {
 
 	appG.Response(http.StatusOK, e.SUCCESS, nil)
 
+}
+
+// @Summary 导出文章
+// @Description 导出所有文章为 .xlsx 文件
+// @Accept	mpfd
+// @Produce json
+// @Param title formData string false "文章标题"
+// @Param state formData int false "State"
+// @Param token query string true "token"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles/export [post]
+func ExportArticle(ctx *gin.Context) {
+	appG := app.Gin{C: ctx}
+	title := ctx.PostForm("title")
+	state := -1
+	if arg := ctx.PostForm("state"); arg != "" {
+		state = com.StrTo(arg).MustInt()
+	}
+
+	articleService := article_service.ArticleService{
+		Title:    title,
+		State:    state,
+		PageNum:  util.GetPage(ctx),
+		PageSize: setting.AppSetting.PageSize,
+	}
+
+	filename, err := articleService.Export()
+	if err != nil {
+		appG.Response(http.StatusOK, e.ErrorExportArticleFail, err.Error())
+		return
+	}
+	data := map[string]string{
+		"export_url":      export.GetExcelFullUrl(filename),
+		"export_sava_url": export.GetExcelFullPath() + filename,
+	}
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }

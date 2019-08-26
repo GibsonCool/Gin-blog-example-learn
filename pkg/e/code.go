@@ -28,6 +28,8 @@ const (
 	ErrorGetArticlesFail       = 10017
 	ErrorGetArticleFail        = 10018
 	ErrorGenArticlePosterFail  = 10019
+	ErrorExportArticleFail     = 10020
+	ErrorImportArticleFail     = 10021
 
 	ErrorAuthCheckTokenFail    = 20001
 	ErrorAuthCheckTokenTimeout = 20002

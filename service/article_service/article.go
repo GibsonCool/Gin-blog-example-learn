@@ -2,10 +2,15 @@ package article_service
 
 import (
 	"Gin-blog-example/models"
+	"Gin-blog-example/pkg/export"
+	"Gin-blog-example/pkg/file"
 	"Gin-blog-example/pkg/gredis"
 	"Gin-blog-example/pkg/logging"
 	"Gin-blog-example/service/cache_service"
 	"encoding/json"
+	"github.com/xuri/excelize"
+	"strconv"
+	"time"
 )
 
 /*
@@ -143,4 +148,55 @@ func (ar *ArticleService) getMaps() map[string]interface{} {
 	}
 
 	return maps
+}
+
+func (ar *ArticleService) Export() (string, error) {
+	articles, e := ar.GetAll()
+	if e != nil {
+		return "", e
+	}
+	sheetName := "文章文件"
+	tagFile := excelize.NewFile()
+
+	index := tagFile.NewSheet(sheetName)
+	_ = tagFile.SetCellValue(sheetName, "A1", "ID")
+	_ = tagFile.SetCellValue(sheetName, "B1", "标题")
+	_ = tagFile.SetCellValue(sheetName, "C1", "内容")
+	_ = tagFile.SetCellValue(sheetName, "D1", "创建人")
+	_ = tagFile.SetCellValue(sheetName, "E1", "创建时间")
+	_ = tagFile.SetCellValue(sheetName, "F1", "修改人")
+	_ = tagFile.SetCellValue(sheetName, "G1", "修改时间")
+	_ = tagFile.SetCellValue(sheetName, "H1", "封面图片地址")
+
+	for index, v := range articles {
+		i := index + 2
+		_ = tagFile.SetCellValue(sheetName, "A"+strconv.Itoa(i), v.ID)
+		_ = tagFile.SetCellValue(sheetName, "B"+strconv.Itoa(i), v.Title)
+		_ = tagFile.SetCellValue(sheetName, "C"+strconv.Itoa(i), v.Content)
+		_ = tagFile.SetCellValue(sheetName, "D"+strconv.Itoa(i), v.CreatedBy)
+		_ = tagFile.SetCellValue(sheetName, "E"+strconv.Itoa(i), v.CreatedOn)
+		_ = tagFile.SetCellValue(sheetName, "F"+strconv.Itoa(i), v.ModifiedBy)
+		_ = tagFile.SetCellValue(sheetName, "G"+strconv.Itoa(i), v.ModifiedOn)
+		_ = tagFile.SetCellValue(sheetName, "H"+strconv.Itoa(i), v.CoverImageUrl)
+	}
+
+	tagFile.SetActiveSheet(index)
+
+	time := strconv.Itoa(int(time.Now().Unix()))
+
+	filename := "article-" + time + export.EXT
+	dirFullPath := export.GetExcelFullPath()
+	e = file.IsNotExistMkDir(dirFullPath)
+	if e != nil {
+		return "", e
+	}
+
+	fullPath := dirFullPath + filename
+
+	e = tagFile.SaveAs(fullPath)
+	if e != nil {
+		return "", e
+	}
+
+	return filename, nil
 }
