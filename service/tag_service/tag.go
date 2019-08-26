@@ -239,7 +239,7 @@ func (t *Tag) Import(r io.Reader) error {
 	}
 
 	//获取某张 sheet 的所有行信息
-	rows, e := xlsx.GetRows("标签信息")
+	rows, e := xlsx.GetRows("标签文件")
 	if e != nil {
 		return e
 	}
@@ -251,6 +251,11 @@ func (t *Tag) Import(r io.Reader) error {
 				data = append(data, cell)
 			}
 
+			//去重操作
+			if isExist, e := models.ExistTagByName(data[1]); isExist {
+				logging.Warn("重复标签：", fmt.Sprintf("%v", data), e)
+				continue
+			}
 			models.AddTag(data[1], 1, data[2])
 		}
 	}

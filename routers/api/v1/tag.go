@@ -258,7 +258,7 @@ func ImportTag(ctx *gin.Context) {
 
 	if err != nil {
 		logging.Warn(err)
-		appG.Response(http.StatusOK, e.ERROR, nil)
+		appG.Response(http.StatusOK, e.ERROR, err.Error())
 		return
 	}
 
@@ -266,7 +266,7 @@ func ImportTag(ctx *gin.Context) {
 	err = tagService.Import(file)
 	if err != nil {
 		logging.Warn(err)
-		appG.Response(http.StatusOK, e.ErrorImportTagFail, nil)
+		appG.Response(http.StatusOK, e.ErrorImportTagFail, err.Error())
 		return
 	}
 
