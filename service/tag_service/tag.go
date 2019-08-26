@@ -9,6 +9,7 @@ import (
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/service/cache_service"
 	"encoding/json"
+	"fmt"
 	"github.com/Unknwon/com"
 	"github.com/tealeg/xlsx"
 	"github.com/xuri/excelize"
@@ -47,8 +48,18 @@ func (t *Tag) Edit() error {
 	if t.State >= 0 {
 		data["state"] = t.State
 	}
+	err := models.EditTag(t.ID, data)
+	if err != nil {
+		return err
+	}
 
-	return models.EditTag(t.ID, data)
+	clearTag := (&cache_service.Tag{State: -1}).GetTagsKey()
+	err = gredis.LikeDeletes(clearTag)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *Tag) Delete() error {
@@ -64,9 +75,11 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 		tags, cacheTags []models.Tag
 	)
 
-	cache := cache_service.Tag{
-		State: t.State,
+	logging.Error(fmt.Sprintf("Tag:%v", t))
 
+	cache := cache_service.Tag{
+		State:    t.State,
+		Name:     t.Name,
 		PageNum:  t.PageNum,
 		PageSize: t.PageSize,
 	}
@@ -104,8 +117,8 @@ func (t *Tag) getMaps() map[string]interface{} {
 	return maps
 }
 
-// Export 导出标签 Excel 文件
-func (t *Tag) Export() (string, error) {
+// ExportByXlsx 导出标签 Excel 文件 使用 tealeg/xlsx 方式
+func (t *Tag) ExportByXlsx() (string, error) {
 
 	tags, e := t.GetAll()
 	if e != nil {
@@ -162,6 +175,55 @@ func (t *Tag) Export() (string, error) {
 
 	fullPath := dirFullPath + filename
 	e = tagFile.Save(fullPath)
+	if e != nil {
+		return "", e
+	}
+
+	return filename, nil
+}
+
+// ExportByExcelize 导出标签文件使用 360EntSecGroup-Skylar/excelize的方式
+func (t *Tag) ExportByExcelize() (string, error) {
+	tags, e := t.GetAll()
+	if e != nil {
+		return "", e
+	}
+
+	sheetName := "标签文件"
+	tagFile := excelize.NewFile()
+
+	index := tagFile.NewSheet(sheetName)
+	_ = tagFile.SetCellValue(sheetName, "A1", "ID")
+	_ = tagFile.SetCellValue(sheetName, "B1", "名称")
+	_ = tagFile.SetCellValue(sheetName, "C1", "创建人")
+	_ = tagFile.SetCellValue(sheetName, "D1", "创建时间")
+	_ = tagFile.SetCellValue(sheetName, "E1", "修改人")
+	_ = tagFile.SetCellValue(sheetName, "F1", "修改时间")
+
+	for index, v := range tags {
+		i := index + 2
+		_ = tagFile.SetCellValue(sheetName, "A"+strconv.Itoa(i), v.ID)
+		_ = tagFile.SetCellValue(sheetName, "B"+strconv.Itoa(i), v.Name)
+		_ = tagFile.SetCellValue(sheetName, "C"+strconv.Itoa(i), v.CreatedBy)
+		_ = tagFile.SetCellValue(sheetName, "D"+strconv.Itoa(i), v.CreatedOn)
+		_ = tagFile.SetCellValue(sheetName, "E"+strconv.Itoa(i), v.ModifiedBy)
+		_ = tagFile.SetCellValue(sheetName, "F"+strconv.Itoa(i), v.ModifiedOn)
+	}
+
+	tagFile.SetActiveSheet(index)
+
+	time := strconv.Itoa(int(time.Now().Unix()))
+
+	filename := "tags-" + time + export.EXT
+	dirFullPath := export.GetExcelFullPath()
+	e = file.IsNotExistMkDir(dirFullPath)
+	if e != nil {
+		return "", e
+	}
+
+	fullPath := dirFullPath + filename
+
+	e = tagFile.SaveAs(fullPath)
 	if e != nil {
 		return "", e
 	}

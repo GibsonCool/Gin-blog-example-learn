@@ -248,27 +248,24 @@ paths:
     post:
       parameters:
       - description: Name
-        in: body
+        in: query
         name: name
         required: true
-        schema:
-          type: integer
+        type: string
       - description: State
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
+        type: integer
+      - description: CreatedBy
+        in: query
+        name: created_by
+        required: true
+        type: string
       - description: token
         in: query
         name: token
         required: true
         type: string
-      - description: CreatedBy
-        in: body
-        name: created_by
-        required: true
-        schema:
-          type: string
       produces:
       - application/json
       responses:
@@ -315,17 +312,19 @@ paths:
         name: id
         required: true
         type: integer
+      - description: name
+        in: query
+        name: name
+        type: string
       - description: State
-        in: body
+        in: query
         name: state
-        schema:
-          type: integer
+        type: integer
       - description: ModifiedBy
-        in: body
+        in: query
         name: modified_by
         required: true
-        schema:
-          type: string
+        type: string
       - description: token
         in: query
         name: token
@@ -345,18 +344,18 @@ paths:
       summary: 修改标签信息
   /api/v1/tags/export:
     post:
+      consumes:
+      - multipart/form-data
       description: 导出所有标签为 .xlsx 文件
       parameters:
       - description: Name
-        in: body
+        in: formData
         name: name
-        schema:
-          type: integer
+        type: string
       - description: State
-        in: body
+        in: formData
         name: state
-        schema:
-          type: integer
+        type: integer
       - description: token
         in: query
         name: token

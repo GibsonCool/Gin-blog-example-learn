@@ -68,10 +68,10 @@ type AddTagForm struct {
 
 // @Summary 新增标签
 // @Produce json
-// @Param name body int true "Name"
-// @Param state body int false "State"
+// @Param name query string true "Name"
+// @Param state query int false "State"
+// @Param created_by query string true "CreatedBy"
 // @Param token query string true "token"
-// @Param created_by body string true "CreatedBy"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
 // @Router /api/v1/tags [post]
@@ -122,8 +122,9 @@ type EditTagForm struct {
 // @Description 根据标签 id 修改标签属性信息
 // @Produce json
 // @Param id path int true "ID"
-// @Param state body int false "State"
-// @Param modified_by body string true "ModifiedBy"
+// @Param name query string false "name"
+// @Param state query int false "State"
+// @Param modified_by query string true "ModifiedBy"
 // @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -208,9 +209,10 @@ func DeleteTag(ctx *gin.Context) {
 
 // @Summary 导出标签
 // @Description 导出所有标签为 .xlsx 文件
+// @Accept	mpfd
 // @Produce json
-// @Param name body int false "Name"
-// @Param state body int false "State"
+// @Param name formData string false "Name"
+// @Param state formData int false "State"
 // @Param token query string true "token"
 // @Success 200 {object} models.BaseResp
 // @Failure 500 {object} models.BaseResp
@@ -223,13 +225,12 @@ func ExportTag(ctx *gin.Context) {
 	if arg := ctx.PostForm("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
 	}
-
 	tageService := tag_service.Tag{
 		Name:  name,
 		State: state,
 	}
 
-	filename, err := tageService.Export()
+	filename, err := tageService.ExportByExcelize()
 	if err != nil {
 		appG.Response(http.StatusOK, e.ErrorExportTagFail, err.Error())
 		return
