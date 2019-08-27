@@ -1,3 +1,6 @@
+来自于对 [《跟煎鱼学GO》]（https://eddycjy.gitbook.io/golang/di-3-ke-gin/install）整个系列教程的学习，并简单记录知识点以及学习过程中遇到的问题
+感谢作者的技术输出
+
 项目知识点
 ==========
 ## 目录结构
@@ -97,7 +100,7 @@ Gin-blog-example/
 >>     "admin":true
 >> }
 >> ```
-*值得注意的是JWT默认是不加密的，任何人都可以读到，所以不要把秘密信息放到这个不封，最后json也要用BAse64URL转成字符串
+*值得注意的是JWT默认是不加密的，任何人都可以读到，所以不要把秘密信息放到这个部分，最后 json 也要用 Base64URL 转成字符串
 ---
 > Signature 部分是对前两个部分的签名，防止数据被篡改  
 > 首先，需要指定一个密钥（secret）。这个密钥只有服务器才知道，不能泄露给用户。然后，使用 Header 里面指定的签名算法（默认是 HMAC SHA256），按照下面的公式产生签名。
@@ -196,7 +199,7 @@ Gin-blog-example/
 > cron 可以简单理解遵循一串定义的字符规则，来描述定时任务
 
 ## redis
-> 是一种使用内存存储(in-memory)的非关系数据库
-> [Redis实战](http://redisinaction.com/index.html)
-> [Redis 命令参考](http://doc.redisfans.com/index.html#)
+> 是一种使用内存存储(in-memory)的非关系数据库  
+> [Redis实战](http://redisinaction.com/index.html)  
+> [Redis 命令参考](http://doc.redisfans.com/index.html#)  
 > [Redis 设计与实现](http://redisbook.com/)
