@@ -16,6 +16,8 @@ type App struct {
 	ImageMaxSize   int
 	ImageAllowExts []string
 
+	QrCodeSavePath string
+
 	LogSavePath string
 	LogSaveName string
 	LogFileExt  string

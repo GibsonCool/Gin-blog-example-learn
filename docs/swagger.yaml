@@ -224,6 +224,27 @@ paths:
           schema:
             $ref: '#/definitions/models.BaseResp'
       summary: 导出文章
+  /api/v1/articles/poster/generate:
+    post:
+      description: 生成二维码图片
+      parameters:
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.BaseResp'
+      summary: 生成二维码
   /api/v1/tags:
     get:
       description: 可选参数 tagName。获取标签列表

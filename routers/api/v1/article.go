@@ -4,14 +4,20 @@ import (
 	"Gin-blog-example/pkg/app"
 	"Gin-blog-example/pkg/e"
 	"Gin-blog-example/pkg/export"
+	"Gin-blog-example/pkg/qrcode"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/util"
 	"Gin-blog-example/service/article_service"
 	"Gin-blog-example/service/tag_service"
 	"github.com/Unknwon/com"
 	"github.com/astaxie/beego/validation"
+	"github.com/boombuler/barcode/qr"
 	"github.com/gin-gonic/gin"
 	"net/http"
+)
+
+const (
+	QrcodeUrl = "https://github.com/GibsonCool"
 )
 
 // @Summary 获取单个文章
@@ -331,4 +337,27 @@ func ExportArticle(ctx *gin.Context) {
 		"export_sava_url": export.GetExcelFullPath() + filename,
 	}
 	appG.Response(http.StatusOK, e.SUCCESS, data)
+}
+
+// @Summary 生成二维码
+// @Description  生成二维码图片
+// @Produce json
+// @Param token query string true "token"
+// @Success 200 {object} models.BaseResp
+// @Failure 500 {object} models.BaseResp
+// @Router /api/v1/articles/poster/generate [post]
+func GenerateArticlePoster(ctx *gin.Context) {
+	appG := app.Gin{C: ctx}
+
+	qrc := qrcode.NewQrcode(QrcodeUrl, 300, 300, qr.M, qr.Auto)
+
+	path := qrcode.GetQrCodeFullPath()
+
+	_, _, err := qrc.Encode(path)
+	if err != nil {
+		appG.Response(http.StatusOK, e.ERROR, err.Error())
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
