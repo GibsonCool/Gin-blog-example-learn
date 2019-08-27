@@ -3,6 +3,8 @@
 *.iml
 .DS_Store
 
+data/*
+logs/*
 
 runtime/*
 !runtime/qrcode/bg.jpg
