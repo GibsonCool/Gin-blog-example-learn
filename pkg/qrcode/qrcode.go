@@ -85,7 +85,7 @@ func GetQrCodeFullPath() string {
 }
 
 func GetQrCodeFullUrl(name string) string {
-	return setting.AppSetting.PrefixUrl + "/" + GetQrCodeFullPath() + name
+	return setting.AppSetting.PrefixUrl + "/" + GetQrCodePath() + name
 }
 
 func GetQrCodeFileName(value string) string {

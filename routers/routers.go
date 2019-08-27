@@ -4,6 +4,7 @@ import (
 	_ "Gin-blog-example/docs"
 	"Gin-blog-example/middleware/jwt"
 	"Gin-blog-example/pkg/export"
+	"Gin-blog-example/pkg/qrcode"
 	"Gin-blog-example/pkg/setting"
 	"Gin-blog-example/pkg/upload"
 	"Gin-blog-example/routers/api"
@@ -27,6 +28,7 @@ func InitRouter() *gin.Engine {
 	//配置支持静态资源--》图片的访问
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 	r.StaticFS("/export", http.Dir(export.GetExcelFullPath()))
+	r.StaticFS("/qrcode", http.Dir(qrcode.GetQrCodeFullPath()))
 
 	r.GET("/auth", api.GetAuth)
 

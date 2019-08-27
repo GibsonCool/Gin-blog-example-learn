@@ -6,5 +6,10 @@
 data/*
 logs/*
 runtime/*
-!runtime/qrcode/
+!runtime/qrcode/bg.jpg
+!runtime/fonts
 
+pkg/export/test.csv
+vendor/
+md/
+runtime/fonts/

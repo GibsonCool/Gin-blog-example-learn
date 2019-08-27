@@ -145,7 +145,7 @@
                 "produces": [
                     "application/json"
                 ],
-                "summary": "生成二维码",
+                "summary": "生成海报二维码",
                 "parameters": [
                     {
                         "type": "string",

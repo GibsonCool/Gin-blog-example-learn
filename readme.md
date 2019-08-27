@@ -6,6 +6,7 @@ Gin-blog-example/
 ├── conf                    //用于存储配置文件
 ├── data                    //MySQL数据挂载卷目录 
 ├── docs                    //swagger 生成的 api 文档相关信息
+├── logs                    //生成日志
 ├── md                      //笔记markdown    
 ├── middleware              //应用中间件
 ├── models                  //引用数据库模型
@@ -26,7 +27,9 @@ Gin-blog-example/
     github.com/astaxie/beego/validation     //beego的表单验证库  
     github.com/fvbock/endless       //实现 Golang HTTP/HTTPS 服务重新启动的零停机
     github.com/robfig/cron          //定时任务
-
+    github.com/gomodule/redigo/redis    //redis go
+    github.com/360EntSecGroup-Skylar/excelize/v2    // xlsx 操作库
+    github.com/boombuler/barcode    // 二维码
 ```
 
 
@@ -191,3 +194,9 @@ Gin-blog-example/
 ## cron
 > [cron表达式详解](https://www.cnblogs.com/linjiqin/p/3178452.html)  
 > cron 可以简单理解遵循一串定义的字符规则，来描述定时任务
+
+## redis
+> 是一种使用内存存储(in-memory)的非关系数据库
+> [Redis实战](http://redisinaction.com/index.html)
+> [Redis 命令参考](http://doc.redisfans.com/index.html#)
+> [Redis 设计与实现](http://redisbook.com/)

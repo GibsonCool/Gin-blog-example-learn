@@ -244,7 +244,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.BaseResp'
-      summary: 生成二维码
+      summary: 生成海报二维码
   /api/v1/tags:
     get:
       description: 可选参数 tagName。获取标签列表

@@ -339,7 +339,7 @@ func ExportArticle(ctx *gin.Context) {
 	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
-// @Summary 生成二维码
+// @Summary 生成海报二维码
 // @Description  生成二维码图片
 // @Produce json
 // @Param token query string true "token"
@@ -349,15 +349,35 @@ func ExportArticle(ctx *gin.Context) {
 func GenerateArticlePoster(ctx *gin.Context) {
 	appG := app.Gin{C: ctx}
 
-	qrc := qrcode.NewQrcode(QrcodeUrl, 300, 300, qr.M, qr.Auto)
+	articleService := &article_service.ArticleService{}
 
-	path := qrcode.GetQrCodeFullPath()
+	qr := qrcode.NewQrcode(QrcodeUrl, 300, 300, qr.M, qr.Auto)
+	posterName := article_service.GetPosterFlag() + "-" + qrcode.GetQrCodeFileName(qr.Url) + qr.GetQrCodeExt()
+	articlePoster := article_service.NewArticlePoster(posterName, articleService, qr)
 
-	_, _, err := qrc.Encode(path)
+	articlePosterBg := article_service.NewArticlePosterBg(
+		"bg.jpg",
+		articlePoster,
+		&article_service.Rect{
+			X0: 0,
+			Y0: 0,
+			X1: 550,
+			Y1: 700,
+		},
+		&article_service.Pt{
+			X: 125,
+			Y: 298,
+		},
+	)
+
+	_, filePath, err := articlePosterBg.Generate()
 	if err != nil {
-		appG.Response(http.StatusOK, e.ERROR, err.Error())
+		appG.Response(http.StatusOK, e.ErrorGenArticlePosterFail, err.Error())
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.SUCCESS, map[string]string{
+		"poster_url":      qrcode.GetQrCodeFullUrl(posterName),
+		"poster_save_url": filePath + posterName,
+	})
 }
