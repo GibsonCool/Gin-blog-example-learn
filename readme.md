@@ -1,4 +1,4 @@
-来自于对 [《跟煎鱼学GO》]（https://eddycjy.gitbook.io/golang/di-3-ke-gin/install）整个系列教程的学习，并简单记录知识点以及学习过程中遇到的问题
+来自于对 [《跟煎鱼学GO》](https://eddycjy.gitbook.io/golang/di-3-ke-gin/install)整个系列教程的学习，并简单记录知识点以及学习过程中遇到的问题
 感谢作者的技术输出
 
 项目知识点
@@ -33,6 +33,7 @@ Gin-blog-example/
     github.com/gomodule/redigo/redis    //redis go
     github.com/360EntSecGroup-Skylar/excelize/v2    // xlsx 操作库
     github.com/boombuler/barcode    // 二维码
+    github.com/golang/freetype      // go 对 freetype 的驱动
 ```
 
 
@@ -203,3 +204,7 @@ Gin-blog-example/
 > [Redis实战](http://redisinaction.com/index.html)  
 > [Redis 命令参考](http://doc.redisfans.com/index.html#)  
 > [Redis 设计与实现](http://redisbook.com/)
+
+## 图像操作和字体
+> [Golang 绘图技术（image/draw包介绍）](https://studygolang.com/articles/4403)  
+> [freetype-go学习](https://studygolang.com/articles/1529)

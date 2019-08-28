@@ -8,9 +8,8 @@ logs/*
 
 runtime/*
 !runtime/qrcode/bg.jpg
-!runtime/fonts
+!/runtime/fonts/
 
 pkg/export/test.csv
 vendor/
 md/
-runtime/fonts/
